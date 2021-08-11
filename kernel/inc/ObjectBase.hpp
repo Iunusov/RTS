@@ -8,8 +8,8 @@ class IResponse;
 #include <queue>
 
 namespace {
-int64_t getGlobalId() noexcept {
-  static int64_t id{-1};
+size_t getGlobalId() noexcept {
+  static size_t id{0};
   return ++id;
 }
 } // namespace
@@ -25,12 +25,12 @@ struct Coord final {
 
 class ObjectBase : public IObject {
 private:
-  int64_t id{-1};
+  const size_t id;
   std::queue<CMD> cmdQueue;
 
 public:
   ObjectBase() noexcept : id{getGlobalId()} {}
-  int64_t getId() const noexcept { return id; }
+  virtual size_t getId() const noexcept override { return id; }
   virtual void execute() noexcept override;
   virtual IResponse acceptCommand(const ICommand &command) noexcept override;
 
