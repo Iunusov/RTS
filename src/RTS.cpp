@@ -18,9 +18,13 @@ int main(int, char **) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
   }
-  SDL_Window *win = SDL_CreateWindow("GAME", // creates a window
-                                     SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED, 1000, 1000, 0);
+  SDL_Window *win = SDL_CreateWindow(
+      "GAME", // creates a window
+      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080,
+      SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_INPUT_GRABBED);
+
+  SDL_SetWindowFullscreen(win, true);
+  SDL_ShowCursor(true);
 
   // triggers the program that controls
   // your graphics hardware and sets flags
@@ -47,19 +51,28 @@ int main(int, char **) {
   // let us control our image position
   // so that we can move it with our keyboard.
   SDL_Rect dest;
+  SDL_Rect dest2;
 
   // connects our texture with dest to control position
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
+  SDL_QueryTexture(tex, NULL, NULL, &dest2.w, &dest2.h);
+
   // adjust height and width of our image box.
   dest.w /= 6;
   dest.h /= 6;
+
+  dest2.w /= 3;
+  dest2.h /= 3;
 
   // sets initial x-position of object
   dest.x = (int)obj.getPosition().x;
 
   // sets initial y-position of object
   dest.y = (int)obj.getPosition().y;
+
+  dest2.x = 500;
+  dest2.y = 500;
 
   // controls annimation loop
   int close = 0;
@@ -69,10 +82,8 @@ int main(int, char **) {
 
     // Get the next event
     SDL_Event event;
-    if (SDL_PollEvent(&event))
-    {
-      if (event.type == SDL_QUIT)
-      {
+    if (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT) {
         break;
       }
     }
@@ -83,6 +94,8 @@ int main(int, char **) {
     // clears the screen
     SDL_RenderClear(rend);
     SDL_RenderCopy(rend, tex, NULL, &dest);
+
+    SDL_RenderCopy(rend, tex, NULL, &dest2);
 
     // triggers the double buffers
     // for multiple rendering
