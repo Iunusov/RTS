@@ -67,10 +67,14 @@ int main(int, char **) {
   // annimation loop
   while (!close) {
 
+    // Get the next event
     SDL_Event event;
-
-    // Events management
-    while (SDL_PollEvent(&event)) {
+    if (SDL_PollEvent(&event))
+    {
+      if (event.type == SDL_QUIT)
+      {
+        break;
+      }
     }
     dest.x = (int)obj.getPosition().x;
 
