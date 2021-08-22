@@ -3,7 +3,7 @@
 #include <iostream>
 
 void TestObject::moveTo(const Coord &) noexcept {
-  position.x += 100;
-  position.y += 200;
-  position.z += 300;
+  position.x += 1;
+  position.y += 1;
+  position.z += 0;
 }
