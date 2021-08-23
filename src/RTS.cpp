@@ -9,6 +9,7 @@
 #include <random>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 #undef main
 
 #include "CommandMove.hpp"
@@ -17,19 +18,22 @@
 
 std::mutex g_i_mutex; // protects g_i
 
-static std::unordered_map<size_t, std::shared_ptr<IObject>> Objects;
+static std::vector<std::shared_ptr<IObject>> Objects;
 
-static void addTestObjects(size_t count = 90000) {
+constexpr const auto MAX_OBJECTS{10000};
+
+static void addTestObjects(size_t count = MAX_OBJECTS) {
   std::mt19937 rng((unsigned int)time(NULL));
   std::uniform_int_distribution<int64_t> gen(200, 1000);
   {
+    Objects.reserve(MAX_OBJECTS);
     const std::lock_guard<std::mutex> lock(g_i_mutex);
 
     auto x = gen(rng);
     auto y = gen(rng);
     for (size_t i(0); i < count; ++i) {
       auto &&obj = std::make_shared<TestObject>(Coord{x, y, 0});
-      Objects[obj->getId()] = std::move(obj);
+      Objects.emplace_back(std::move(obj));
     }
   }
 }
@@ -40,11 +44,12 @@ static void startGameThread() {
       {
         const std::lock_guard<std::mutex> lock(g_i_mutex);
 
-        for (auto &&obj : Objects) {
-          obj.second->execute();
+        for (auto &obj : Objects) {
+          obj->execute();
         }
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000.0 / 200.0)));
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds((int)(1000.0 / 24.0)));
     }
   }};
   t.detach();
@@ -59,7 +64,7 @@ int main(int, char **) {
   {
     const std::lock_guard<std::mutex> lock(g_i_mutex);
     for (auto &&obj : Objects) {
-      obj.second->acceptCommand(cmd);
+      obj->acceptCommand(cmd);
     }
   }
 
@@ -68,35 +73,37 @@ int main(int, char **) {
     std::cout << "SDL_INIT_VIDEO" << std::endl;
     return 1;
   }
-    
-  SDL_Window *win = SDL_CreateWindow("RTS", SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED, 1920, 1080,
-                                     SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+
+  SDL_Window *win = SDL_CreateWindow(
+      "RTS", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080,
+      SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL |
+          SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED |
+          SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
   if (win == nullptr) {
     std::cout << "win" << std::endl;
     SDL_Quit();
     return 1;
   }
-  //SDL_GL_CreateContext(win);
-  //SDL_SetWindowFullscreen(win, SDL_TRUE);
+  // SDL_GL_CreateContext(win);
+  // SDL_SetWindowFullscreen(win, SDL_TRUE);
 
   SDL_Renderer *rend = nullptr;
-    for( int i = 0; i < SDL_GetNumRenderDrivers(); ++i )
-{
+  for (int i = 0; i < SDL_GetNumRenderDrivers(); ++i) {
     SDL_RendererInfo rendererInfo = {};
-    SDL_GetRenderDriverInfo( i, &rendererInfo );
-    
-	
-	std::cout<<rendererInfo.name<<std::endl;
-	
-	if( rendererInfo.name != std::string( "opengl" ) )
-    {
-        continue;
+    SDL_GetRenderDriverInfo(i, &rendererInfo);
+
+    std::cout << rendererInfo.name << std::endl;
+
+    if (rendererInfo.name != std::string("opengl")) {
+      continue;
     }
 
-    rend = SDL_CreateRenderer( win, i, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+    rend = SDL_CreateRenderer(win, i,
+                              SDL_RENDERER_ACCELERATED |
+                                  SDL_RENDERER_PRESENTVSYNC |
+                                  SDL_RENDERER_TARGETTEXTURE);
     break;
-}
+  }
 
   VideoContext::Create(rend);
 
@@ -119,7 +126,7 @@ int main(int, char **) {
     {
       const std::lock_guard<std::mutex> lock(g_i_mutex);
       for (auto &&obj : Objects) {
-        obj.second->draw(*VideoContext::GetInstance());
+        obj->draw(*VideoContext::GetInstance());
       }
     }
 

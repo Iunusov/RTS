@@ -22,12 +22,23 @@ private:
 
 public:
   ObjectBase() noexcept : id{getGlobalId()} {}
-  virtual size_t getId() const noexcept override { return id; }
-  virtual void execute() noexcept override;
-  virtual void acceptCommand(const ICommand &command) noexcept override;
+  inline virtual size_t getId() const noexcept override final { return id; }
+
+  inline virtual void execute() noexcept override {
+    if (cmdQueue.empty()) {
+      return;
+    }
+    std::unique_ptr<ICommand> &p = cmdQueue.front();
+    if (p->execute(this)) {
+      cmdQueue.pop();
+    }
+  }
+  virtual void acceptCommand(const ICommand &command) noexcept override final;
 
   int64_t health = 100;
   Coord position{};
   virtual int64_t getHealth() const noexcept { return health; }
-  virtual Coord getPosition() const noexcept override { return position; }
+  inline virtual Coord getPosition() const noexcept override final {
+    return position;
+  }
 };

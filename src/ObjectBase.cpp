@@ -9,12 +9,3 @@ void ObjectBase::acceptCommand(const ICommand &command) noexcept {
   }
   cmdQueue.push(command.clone());
 }
-void ObjectBase::execute() noexcept {
-  if (cmdQueue.empty()) {
-    return;
-  }
-  std::unique_ptr<ICommand> &p = cmdQueue.front();
-  if (p->execute(this)) {
-    cmdQueue.pop();
-  }
-}

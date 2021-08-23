@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (MSVC)
 add_compile_options(/O2 /DNDEBUG)
 else()
-add_compile_options(-O2 -DNDEBUG -fno-exceptions -pipe)
+add_compile_options(-O3 -fomit-frame-pointer -DNDEBUG -fno-exceptions -pipe)
 endif()
 
 
