@@ -6,9 +6,9 @@ set (CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (MSVC)
-add_compile_options(/O2 /Ot /Oy /fp:fast /GF /Gy /DNDEBUG)
+add_compile_options(/O2 /DNDEBUG)
 else()
-add_compile_options(-Ofast -fomit-frame-pointer -fno-exceptions -DNDEBUG -pipe)
+add_compile_options(-O2 -DNDEBUG -fno-exceptions -pipe)
 endif()
 
 
