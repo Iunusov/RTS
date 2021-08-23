@@ -24,7 +24,7 @@ public:
   ObjectBase() noexcept : id{getGlobalId()} {}
   virtual size_t getId() const noexcept override { return id; }
   virtual void execute() noexcept override;
-  virtual IResponse acceptCommand(const ICommand &command) noexcept override;
+  virtual void acceptCommand(const ICommand &command) noexcept override;
 
   int64_t health = 100;
   Coord position{};

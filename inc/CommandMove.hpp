@@ -16,5 +16,5 @@ private:
 
 public:
   CommandMove(const Coord &position) noexcept : target{position} {}
-  virtual IResponse execute(IObject *object) noexcept override;
+  virtual bool execute(IObject *object) noexcept override;
 };

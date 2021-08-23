@@ -1,44 +1,102 @@
 ﻿#include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
+#include <chrono>
 #include <cstdio>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <random>
+#include <thread>
+#include <unordered_map>
 #undef main
 
 #include "CommandMove.hpp"
 #include "TestObject.hpp"
 #include "VideoContext.hpp"
 
-static SDL_Renderer *rend = nullptr;
+std::mutex g_i_mutex; // protects g_i
+
+static std::unordered_map<size_t, std::shared_ptr<IObject>> Objects;
+
+static void addTestObjects(size_t count = 90000) {
+  std::mt19937 rng((unsigned int)time(NULL));
+  std::uniform_int_distribution<int64_t> gen(200, 1000);
+  {
+    const std::lock_guard<std::mutex> lock(g_i_mutex);
+
+    auto x = gen(rng);
+    auto y = gen(rng);
+    for (size_t i(0); i < count; ++i) {
+      auto &&obj = std::make_shared<TestObject>(Coord{x, y, 0});
+      Objects[obj->getId()] = std::move(obj);
+    }
+  }
+}
+
+static void startGameThread() {
+  static std::thread t{[]() {
+    while (true) {
+      {
+        const std::lock_guard<std::mutex> lock(g_i_mutex);
+
+        for (auto &&obj : Objects) {
+          obj.second->execute();
+        }
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000.0 / 200.0)));
+    }
+  }};
+  t.detach();
+}
 
 int main(int, char **) {
 
-  TestObject obj{Coord{0, 0, 0}};
-
-  TestObject obj2{Coord{100, 300, 300}};
+  addTestObjects();
+  startGameThread();
 
   CommandMove cmd{Coord{400, 400, 0}};
-
-  obj.acceptCommand(cmd);
-  obj2.acceptCommand(cmd);
-
-  // retutns zero on success else non-zero
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    printf("error initializing SDL: %s\n", SDL_GetError());
+  {
+    const std::lock_guard<std::mutex> lock(g_i_mutex);
+    for (auto &&obj : Objects) {
+      obj.second->acceptCommand(cmd);
+    }
   }
-  SDL_Window *win =
-      SDL_CreateWindow("GAME", // creates a window
-                       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920,
-                       1080, SDL_WINDOW_INPUT_GRABBED);
 
-  // SDL_SetWindowFullscreen(win, true);
-  SDL_ShowCursor(true);
+  // This section is the initialization for SDL2
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    std::cout << "SDL_INIT_VIDEO" << std::endl;
+    return 1;
+  }
+    
+  SDL_Window *win = SDL_CreateWindow("RTS", SDL_WINDOWPOS_CENTERED,
+                                     SDL_WINDOWPOS_CENTERED, 1920, 1080,
+                                     SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+  if (win == nullptr) {
+    std::cout << "win" << std::endl;
+    SDL_Quit();
+    return 1;
+  }
+  //SDL_GL_CreateContext(win);
+  //SDL_SetWindowFullscreen(win, SDL_TRUE);
 
-  // triggers the program that controls
-  // your graphics hardware and sets flags
-  Uint32 render_flags = SDL_RENDERER_ACCELERATED;
+  SDL_Renderer *rend = nullptr;
+    for( int i = 0; i < SDL_GetNumRenderDrivers(); ++i )
+{
+    SDL_RendererInfo rendererInfo = {};
+    SDL_GetRenderDriverInfo( i, &rendererInfo );
+    
+	
+	std::cout<<rendererInfo.name<<std::endl;
+	
+	if( rendererInfo.name != std::string( "opengl" ) )
+    {
+        continue;
+    }
 
-  // creates a renderer to render our images
-  rend = SDL_CreateRenderer(win, -1, render_flags);
+    rend = SDL_CreateRenderer( win, i, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+    break;
+}
 
   VideoContext::Create(rend);
 
@@ -58,15 +116,19 @@ int main(int, char **) {
     // clears the screen
     SDL_RenderClear(rend);
 
-    obj.execute();
-    obj2.execute();
+    {
+      const std::lock_guard<std::mutex> lock(g_i_mutex);
+      for (auto &&obj : Objects) {
+        obj.second->draw(*VideoContext::GetInstance());
+      }
+    }
 
     // triggers the double buffers
     // for multiple rendering
     SDL_RenderPresent(rend);
 
     // calculates to 60 fps
-    SDL_Delay(1000 / 60);
+    SDL_Delay((int)(1000.0 / 60.0));
   }
 
   // destroy renderer

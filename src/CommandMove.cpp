@@ -4,12 +4,20 @@
 #include "IResponse.hpp"
 #include "ObjectBase.hpp"
 
-IResponse CommandMove::execute(IObject *object) noexcept {
+bool CommandMove::execute(IObject *object) noexcept {
   if (!obj) {
     obj = dynamic_cast<IMovableObject *>(object);
   }
   if (obj) {
     obj->moveTo(target);
   }
-  return IResponse{"finished"};
+
+  if (object->getPosition().x <= 0 || object->getPosition().x >= 1920 - 2) {
+    return true;
+  }
+
+  if (object->getPosition().y <= 0 || object->getPosition().y >= 1080 - 2) {
+    return true;
+  }
+  return false;
 }
