@@ -1,10 +1,10 @@
-project("SDL2_image" C)
+project("SDL_Image" C)
 
 set( SDL_STATIC ON CACHE BOOL "" FORCE )
 set( SDL_SHARED OFF CACHE BOOL "" FORCE )
 
-add_subdirectory(SDL2)
-include_directories(SDL2/include)
+add_subdirectory(SDL)
+include_directories(SDL/include)
 
 include_directories(${PROJECT_NAME})
 
