@@ -1,7 +1,9 @@
 #include "TestObject.hpp"
-#include "VideoContext.hpp"
 
 #include <random>
+#include <ctime> 
+
+#include "VideoContext.hpp"
 
 void TestObject::moveTo(const Coord &) noexcept {
   static std::mt19937 rng((unsigned int)time(NULL));

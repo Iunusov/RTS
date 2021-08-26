@@ -1,6 +1,7 @@
 ﻿#include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
+
 #include <chrono>
 #include <cstdio>
 #include <iostream>
@@ -20,7 +21,7 @@ std::mutex g_i_mutex; // protects g_i
 
 static std::vector<std::shared_ptr<IObject>> Objects;
 
-constexpr const auto MAX_OBJECTS{10000};
+constexpr const auto MAX_OBJECTS{100000};
 
 static void addTestObjects(size_t count = MAX_OBJECTS) {
   std::mt19937 rng((unsigned int)time(NULL));
@@ -56,6 +57,17 @@ static void startGameThread() {
 }
 
 int main(int, char **) {
+  {
+    SDL_version compiled;
+    SDL_version linked;
+
+    SDL_VERSION(&compiled);
+    SDL_GetVersion(&linked);
+    printf("We compiled against SDL version %d.%d.%d ...\n", compiled.major,
+           compiled.minor, compiled.patch);
+    printf("But we are linking against SDL version %d.%d.%d.\n", linked.major,
+           linked.minor, linked.patch);
+  }
 
   addTestObjects();
   startGameThread();
@@ -111,7 +123,6 @@ int main(int, char **) {
 
   // annimation loop
   while (!close) {
-
     // Get the next event
     SDL_Event event;
     if (SDL_PollEvent(&event)) {

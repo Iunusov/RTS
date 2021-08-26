@@ -13,7 +13,6 @@ void VideoContext::Create(SDL_Renderer *r) noexcept {
 }
 
 void VideoContext::draw(const TestObject &obj) noexcept {
-
   // please provide a path for your image
   static auto surface = SDL_LoadBMP("assets/test.bmp");
 

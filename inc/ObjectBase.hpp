@@ -22,9 +22,9 @@ private:
 
 public:
   ObjectBase() noexcept : id{getGlobalId()} {}
-  inline virtual size_t getId() const noexcept override final { return id; }
+  virtual size_t getId() const noexcept override final { return id; }
 
-  inline virtual void execute() noexcept override {
+  virtual void execute() noexcept override {
     if (cmdQueue.empty()) {
       return;
     }
@@ -38,7 +38,5 @@ public:
   int64_t health = 100;
   Coord position{};
   virtual int64_t getHealth() const noexcept { return health; }
-  inline virtual Coord getPosition() const noexcept override final {
-    return position;
-  }
+  virtual Coord getPosition() const noexcept override final { return position; }
 };

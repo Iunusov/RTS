@@ -1,8 +1,6 @@
 #pragma once
 
 #include "CommandBase.hpp"
-
-#include "CommandBase.hpp"
 #include "CommandTpl.hpp"
 #include "IResponse.hpp"
 #include "ObjectBase.hpp"
