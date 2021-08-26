@@ -7,5 +7,10 @@ void ObjectBase::acceptCommand(const ICommand &command) noexcept {
     command.clone()->execute(this);
     return;
   }
+  if (command.getPriority() == ICommand::Priority::IDLE) {
+    idleCmdQueue.push_back(command.clone());
+    return;
+  }
+
   cmdQueue.push(command.clone());
 }

@@ -13,24 +13,26 @@ void VideoContext::Create(SDL_Renderer *r) noexcept {
 }
 
 void VideoContext::draw(const TestObject &obj) noexcept {
-  static auto rwop = SDL_RWFromFile("assets/grass.png", "rb");
-  static auto surface = IMG_LoadPNG_RW(rwop);
-  static auto tex = SDL_CreateTextureFromSurface(rend, surface);
-
+  static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
   SDL_Rect dest;
 
-  // connects our texture with dest to control position
-  SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-
-  // adjust height and width of our image box.
-  // dest.w /= 6;
-  // dest.h /= 6;
-
-  // sets initial x-position of object
+  SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
+  dest.w /=2;
+  dest.h /=2;
   dest.x = static_cast<int>(obj.getPosition().x);
-
-  // sets initial y-position of object
   dest.y = static_cast<int>(obj.getPosition().y);
+  SDL_RenderCopy(rend, panz, NULL, &dest);
 
-  SDL_RenderCopy(rend, tex, NULL, &dest);
+  static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
+  SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
+  dest.x = static_cast<int>(obj.getPosition().x - 40);
+  dest.y = static_cast<int>(obj.getPosition().y);
+  dest.w /=2;
+  dest.h /=2;
+  // SDL_RenderCopy(rend, gun, NULL, &dest);
+
+  const SDL_Point center{150, 100};
+
+  SDL_RenderCopyEx(rend, gun, NULL, &dest, (int)obj.fireAngle(), &center,
+                   SDL_FLIP_NONE);
 }

@@ -12,5 +12,6 @@ public:
   virtual void acceptCommand(const ICommand &command) noexcept = 0;
   virtual ~IObject() noexcept = default;
   virtual Coord getPosition() const noexcept = 0;
+  virtual size_t fireAngle() const noexcept = 0;
   virtual void draw(VideoContext &) const noexcept = 0;
 };

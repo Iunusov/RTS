@@ -21,19 +21,17 @@ std::mutex g_i_mutex; // protects g_i
 
 static std::vector<std::shared_ptr<IObject>> Objects;
 
-constexpr const auto MAX_OBJECTS{3};
+constexpr const auto MAX_OBJECTS{100};
 
 static void addTestObjects(size_t count = MAX_OBJECTS) {
   std::mt19937 rng((unsigned int)time(NULL));
-  std::uniform_int_distribution<int64_t> gen(200, 1000);
+  std::uniform_int_distribution<int64_t> gen(0, 1920);
   {
     Objects.reserve(MAX_OBJECTS);
     const std::lock_guard<std::mutex> lock(g_i_mutex);
 
-    auto x = 500;
-    auto y = 500;
     for (size_t i(0); i < count; ++i) {
-      auto &&obj = std::make_shared<TestObject>(Coord{x, y, 0});
+      auto &&obj = std::make_shared<TestObject>(Coord{gen(rng), gen(rng), 0});
       Objects.emplace_back(std::move(obj));
     }
   }
@@ -50,45 +48,35 @@ static void startGameThread() {
         }
       }
       std::this_thread::sleep_for(
-          std::chrono::milliseconds((int)(1000.0 / 8.0)));
+          std::chrono::milliseconds((int)(1000.0 / 10.0)));
     }
   }};
   t.detach();
 }
 
 void drawMap(SDL_Renderer *rend) noexcept {
-  // load sample.png into image
-  SDL_Surface *surface;
-  SDL_RWops *rwop = nullptr;
-  rwop = SDL_RWFromFile("assets/grass.png", "rb");
-  surface = IMG_LoadPNG_RW(rwop);
 
-  if (!surface) {
-    printf("IMG_LoadPNG_RW: %s\n", IMG_GetError());
-    // handle error
-  }
-
-  SDL_Rect dest;
-
+  static auto rwop = SDL_RWFromFile("assets/grass.png", "rb");
+  static auto surface = IMG_LoadPNG_RW(rwop);
   static auto tex = SDL_CreateTextureFromSurface(rend, surface);
+
   // connects our texture with dest to control position
+  SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
-  // sets initial x-position of object
-  dest.x = static_cast<int>(300 + 300);
+  bool f = false;
+  for (size_t i(0); i < 50; ++i) {
+    for (size_t j(0); j < 10; ++j) {
 
-  // sets initial y-position of object
-  dest.y = static_cast<int>(300);
-
-  SDL_RenderCopy(rend, tex, NULL, &dest);
-
-  // sets initial x-position of object
-  dest.x = static_cast<int>(300 - 300);
-
-  // sets initial y-position of object
-  dest.y = static_cast<int>(300);
-
-  SDL_RenderCopy(rend, tex, NULL, &dest);
+      dest.x = (int)(512 * j);
+      dest.y = (int)(i * 130);
+      if (f) {
+        dest.x += 512 / 2;
+      }
+      SDL_RenderCopy(rend, tex, NULL, &dest);
+    }
+    f = !f;
+  }
 }
 
 int main(int, char **) {
@@ -168,6 +156,7 @@ int main(int, char **) {
 
     // clears the screen
     SDL_RenderClear(rend);
+    // drawMap(rend);
 
     {
       const std::lock_guard<std::mutex> lock(g_i_mutex);
