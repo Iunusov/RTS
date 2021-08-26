@@ -1,7 +1,7 @@
 #include "TestObject.hpp"
 
+#include <ctime>
 #include <random>
-#include <ctime> 
 
 #include "VideoContext.hpp"
 

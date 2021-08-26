@@ -5,6 +5,14 @@ project("RTS" CXX)
 # set standard
 set (CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# add global compile options
+if (MSVC)
+add_compile_options(/O2 /DNDEBUG)
+else()
+add_compile_options(-O3 -fomit-frame-pointer -DNDEBUG -fno-exceptions -pipe)
+endif()
 
 # set pthreads
 if (NOT MSVC)
@@ -15,15 +23,16 @@ set(CMAKE_USE_PTHREADS_INIT 1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif()
 
-# add global compile options
-if (MSVC)
-add_compile_options(/O2 /DNDEBUG)
-else()
-add_compile_options(-O3 -fomit-frame-pointer -DNDEBUG -fno-exceptions -pipe)
-endif()
+# SDL options
+set( SDL_STATIC ON CACHE BOOL "" FORCE )
+set( SDL_SHARED OFF CACHE BOOL "" FORCE )
+set( SUPPORT_PNG ON CACHE BOOL "" FORCE )
+set( BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE )
 
-# build SDL
-add_subdirectory(deps/SDL)
+
+
+add_subdirectory(deps/SDL/SDL)
+add_subdirectory(deps/SDL/SDL_Image)
 
 # add executable
 include_directories(inc)
@@ -32,7 +41,7 @@ add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME}  PRIVATE SDL_Image SDL2-static Threads::Threads)
+target_link_libraries(${PROJECT_NAME}  PRIVATE SDL2-static SDL2_image  Threads::Threads)
 if (MSVC)
 target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 else()

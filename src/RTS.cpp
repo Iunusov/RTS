@@ -21,7 +21,7 @@ std::mutex g_i_mutex; // protects g_i
 
 static std::vector<std::shared_ptr<IObject>> Objects;
 
-constexpr const auto MAX_OBJECTS{100000};
+constexpr const auto MAX_OBJECTS{3};
 
 static void addTestObjects(size_t count = MAX_OBJECTS) {
   std::mt19937 rng((unsigned int)time(NULL));
@@ -30,8 +30,8 @@ static void addTestObjects(size_t count = MAX_OBJECTS) {
     Objects.reserve(MAX_OBJECTS);
     const std::lock_guard<std::mutex> lock(g_i_mutex);
 
-    auto x = gen(rng);
-    auto y = gen(rng);
+    auto x = 500;
+    auto y = 500;
     for (size_t i(0); i < count; ++i) {
       auto &&obj = std::make_shared<TestObject>(Coord{x, y, 0});
       Objects.emplace_back(std::move(obj));
@@ -50,10 +50,45 @@ static void startGameThread() {
         }
       }
       std::this_thread::sleep_for(
-          std::chrono::milliseconds((int)(1000.0 / 24.0)));
+          std::chrono::milliseconds((int)(1000.0 / 8.0)));
     }
   }};
   t.detach();
+}
+
+void drawMap(SDL_Renderer *rend) noexcept {
+  // load sample.png into image
+  SDL_Surface *surface;
+  SDL_RWops *rwop = nullptr;
+  rwop = SDL_RWFromFile("assets/grass.png", "rb");
+  surface = IMG_LoadPNG_RW(rwop);
+
+  if (!surface) {
+    printf("IMG_LoadPNG_RW: %s\n", IMG_GetError());
+    // handle error
+  }
+
+  SDL_Rect dest;
+
+  static auto tex = SDL_CreateTextureFromSurface(rend, surface);
+  // connects our texture with dest to control position
+  SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+
+  // sets initial x-position of object
+  dest.x = static_cast<int>(300 + 300);
+
+  // sets initial y-position of object
+  dest.y = static_cast<int>(300);
+
+  SDL_RenderCopy(rend, tex, NULL, &dest);
+
+  // sets initial x-position of object
+  dest.x = static_cast<int>(300 - 300);
+
+  // sets initial y-position of object
+  dest.y = static_cast<int>(300);
+
+  SDL_RenderCopy(rend, tex, NULL, &dest);
 }
 
 int main(int, char **) {
