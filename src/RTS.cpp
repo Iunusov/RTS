@@ -2,9 +2,11 @@
 #include <SDL_image.h>
 #include <SDL_timer.h>
 
+#include <atomic>
 #include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <mutex>
 #include <random>
@@ -13,26 +15,86 @@
 #include <vector>
 #undef main
 
-#include "CommandMove.hpp"
+#include "CommandBase.hpp"
 #include "TestObject.hpp"
 #include "VideoContext.hpp"
 
+extern const ICommand *command_move;
+
+inline int64_t carX(int64_t x, int64_t y, int64_t w) {
+  return (x - y) * (int64_t)(w / 2.0);
+}
+inline int64_t carY(int64_t x, int64_t y, int64_t h) {
+  return (x + y) * (int64_t)(h / 2.0);
+}
+
 std::mutex g_i_mutex; // protects g_i
 
-static std::vector<std::shared_ptr<IObject>> Objects;
+static std::list<IObject *> Objects;
 
-constexpr const auto MAX_OBJECTS{100};
+constexpr const auto MAX_OBJECTS{1000};
+
+void drawMap(SDL_Renderer *rend, Coord coord) noexcept {
+
+  static auto tex = IMG_LoadTexture(rend, "assets/grass.png");
+
+  // connects our texture with dest to control position
+  SDL_Rect dest;
+  SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+
+  for (int64_t i(0); i < 10; i++) {
+    for (int64_t j(0); j < 10; j++) {
+      dest.x = (int)(carX(i, j, dest.w) + coord.x);
+      dest.y = (int)(carY(i, j, (int64_t)(dest.h / 2.0)) + coord.y);
+      SDL_RenderCopy(rend, tex, NULL, &dest);
+    }
+  }
+}
+
+class Scroller {
+
+public:
+  std::atomic<int> dir{0};
+  Coord coord;
+
+  Scroller() {
+
+    auto th = std::thread([this]() {
+      while (1) {
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds((int)(1000.0 / 60)));
+        switch (dir) {
+        case 0:
+          continue;
+          ;
+        case 1:
+          this->coord.x += 20;
+          break;
+        case 2:
+          this->coord.y += 20;
+          break;
+        case 3:
+          this->coord.x -= 20;
+          break;
+        case 4:
+          this->coord.y -= 20;
+          break;
+        }
+      }
+    });
+
+    th.detach();
+  }
+};
 
 static void addTestObjects(size_t count = MAX_OBJECTS) {
   std::mt19937 rng((unsigned int)time(NULL));
-  std::uniform_int_distribution<int64_t> gen(0, 1920);
+  std::uniform_int_distribution<int64_t> gen(-5000, 5000);
   {
-    Objects.reserve(MAX_OBJECTS);
     const std::lock_guard<std::mutex> lock(g_i_mutex);
 
     for (size_t i(0); i < count; ++i) {
-      auto &&obj = std::make_shared<TestObject>(Coord{gen(rng), gen(rng), 0});
-      Objects.emplace_back(std::move(obj));
+      Objects.emplace_back(new TestObject{Coord{gen(rng), gen(rng), 0}});
     }
   }
 }
@@ -54,31 +116,6 @@ static void startGameThread() {
   t.detach();
 }
 
-void drawMap(SDL_Renderer *rend) noexcept {
-
-  static auto rwop = SDL_RWFromFile("assets/grass.png", "rb");
-  static auto surface = IMG_LoadPNG_RW(rwop);
-  static auto tex = SDL_CreateTextureFromSurface(rend, surface);
-
-  // connects our texture with dest to control position
-  SDL_Rect dest;
-  SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-
-  bool f = false;
-  for (size_t i(0); i < 50; ++i) {
-    for (size_t j(0); j < 10; ++j) {
-
-      dest.x = (int)(512 * j);
-      dest.y = (int)(i * 130);
-      if (f) {
-        dest.x += 512 / 2;
-      }
-      SDL_RenderCopy(rend, tex, NULL, &dest);
-    }
-    f = !f;
-  }
-}
-
 int main(int, char **) {
   {
     SDL_version compiled;
@@ -95,11 +132,10 @@ int main(int, char **) {
   addTestObjects();
   startGameThread();
 
-  CommandMove cmd{Coord{400, 400, 0}};
   {
     const std::lock_guard<std::mutex> lock(g_i_mutex);
-    for (auto &&obj : Objects) {
-      obj->acceptCommand(cmd);
+    for (auto &obj : Objects) {
+      obj->acceptCommand(*command_move);
     }
   }
 
@@ -141,6 +177,7 @@ int main(int, char **) {
   }
 
   VideoContext::Create(rend);
+  Scroller scroller{};
 
   bool close = false;
 
@@ -148,20 +185,50 @@ int main(int, char **) {
   while (!close) {
     // Get the next event
     SDL_Event event;
+
     if (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
         break;
+      }
+
+      if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
+
+        case SDLK_UP:
+          scroller.dir = 2;
+          break;
+          break;
+        case SDLK_DOWN:
+          scroller.dir = 4;
+          break;
+          break;
+        case SDLK_LEFT:
+          scroller.dir = 1;
+          break;
+          break;
+        case SDLK_RIGHT:
+          scroller.dir = 3;
+          break;
+          break;
+        default:
+          scroller.dir = 0;
+          break;
+        }
+      } else {
+        scroller.dir = 0;
       }
     }
 
     // clears the screen
     SDL_RenderClear(rend);
-    // drawMap(rend);
+
+    auto coord = scroller.coord;
+    drawMap(rend, coord);
 
     {
       const std::lock_guard<std::mutex> lock(g_i_mutex);
-      for (auto &&obj : Objects) {
-        obj->draw(*VideoContext::GetInstance());
+      for (auto &obj : Objects) {
+        obj->draw(coord, *VideoContext::GetInstance());
       }
     }
 

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Coord.hpp"
+#include "CppHacks.hpp"
 #include "ICommand.hpp"
 #include "IObject.hpp"
 
-class IResponse;
-
+#include <memory>
 #include <queue>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -19,31 +20,22 @@ size_t getGlobalId() noexcept {
 class ObjectBase : public IObject {
 private:
   const size_t id;
-  std::queue<CMD> cmdQueue;
-  std::vector<CMD> idleCmdQueue;
+  std::queue<std::unique_ptr<ICommand>> cmdQueue;
+  std::vector<std::unique_ptr<ICommand>> idleCmdQueue;
+  static std::unordered_map<size_t, IObject *> cache;
 
 public:
-  ObjectBase() noexcept : id{getGlobalId()} {}
-  virtual size_t getId() const noexcept override final { return id; }
-
-  virtual void execute() noexcept override {
-    for (auto &cmd : idleCmdQueue) {
-      cmd->execute(this);
-    }
-    if (cmdQueue.empty()) {
-      return;
-    }
-    std::unique_ptr<ICommand> &p = cmdQueue.front();
-    if (p->execute(this)) {
-      cmdQueue.pop();
-    }
-  }
-  virtual void acceptCommand(const ICommand &command) noexcept override final;
-
   int64_t health = 100;
   Coord position{};
-  size_t fire_angle{0};
-  virtual int64_t getHealth() const noexcept { return health; }
-  virtual Coord getPosition() const noexcept override final { return position; }
-  virtual size_t fireAngle() const noexcept override { return fire_angle; }
+
+public:
+  static IObject *getById(size_t id) noexcept;
+
+  ObjectBase() noexcept : id{getGlobalId()} { cache.emplace(id, this); }
+  virtual ~ObjectBase() noexcept override { cache.erase(id); }
+  size_t getId() CNOF { return id; }
+  void execute() NCNOF;
+  void acceptCommand(const ICommand &command) NCNOF;
+  virtual int64_t getHealth() CNOF { return health; }
+  Coord getPosition() CNOF { return position; }
 };

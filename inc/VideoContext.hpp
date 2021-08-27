@@ -2,19 +2,17 @@
 
 #include <SDL.h>
 
+struct Coord;
 class TestObject;
 
 class VideoContext final {
 private:
-  SDL_Renderer *rend = nullptr;
-
-private:
-  VideoContext(SDL_Renderer *rend) : rend(rend) {}
-
   static VideoContext *instance;
+  SDL_Renderer *rend = nullptr;
+  VideoContext(SDL_Renderer *rend) noexcept : rend(rend) {}
 
 public:
   static void Create(SDL_Renderer *r) noexcept;
   static VideoContext *GetInstance() noexcept { return instance; }
-  void draw(const TestObject &obj) noexcept;
+  void draw(const Coord &camera, const TestObject &obj) noexcept;
 };

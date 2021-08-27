@@ -36,6 +36,7 @@ add_subdirectory(deps/SDL/SDL_Image)
 
 # add executable
 include_directories(inc)
+include_directories(inc/interfaces)
 aux_source_directory(src SUB_SOURCES)
 add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 

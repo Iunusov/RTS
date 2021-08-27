@@ -1,19 +1,18 @@
 #pragma once
 
-#include "CommandIdle.hpp"
 #include "IMovableObject.hpp"
 #include "ObjectBase.hpp"
+
+#include "CppHacks.hpp"
+
 class VideoContext;
 
-class TestObject final : public ObjectBase, public IMovableObject {
-public:
-  TestObject(const Coord &pos) {
-    position = pos;
-    CommandIdle idle;
-    acceptCommand(idle);
-  };
-  virtual void moveTo(const Coord &) noexcept override;
-  virtual void draw(VideoContext &ctx) const noexcept override;
-};
+extern const ICommand *command_idle;
 
-class TestBuilding : public ObjectBase {};
+class TestObject final : public IMovableObject {
+public:
+  TestObject(const Coord &pos) noexcept;
+
+  void moveTo(const Coord &) NCNOF;
+  void draw(const Coord &camera, VideoContext &ctx) CNOF;
+};
