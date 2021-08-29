@@ -3,6 +3,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
+#include <SDL_video.h>
+
+#include <iostream>
 
 static inline int64_t carX(int64_t x, int64_t y, int64_t w) {
   return (x - y) * (int64_t)(w / 2.0);
@@ -24,14 +27,6 @@ VideoContextSDL::~VideoContextSDL() noexcept {
 void VideoContextSDL::clear() noexcept { SDL_RenderClear(rend); }
 
 void VideoContextSDL::delay() const noexcept {
-	SDL_Event event;
-
-        if (SDL_PollEvent(&event)) {
-          if (event.type == SDL_QUIT) {
-            SDL_Quit();
-            exit(1);
-          }
-		}
   // calculates to 60 fps
   SDL_Delay((int)(1000.0 / 60.0));
 }
@@ -40,24 +35,44 @@ void VideoContextSDL::present() noexcept { SDL_RenderPresent(rend); }
 
 void VideoContextSDL::setup() noexcept {
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
+    SDL_Log("SDL_Init failed");
     return;
   }
 
-  win = SDL_CreateWindow(
-      "RTS", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080,
-      SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL |
-          SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED |
-          SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+  SDL_Log(SDL_GetCurrentVideoDriver());
+
+  SDL_DisplayMode DM;
+  SDL_GetCurrentDisplayMode(0, &DM);
+  auto Width = DM.w;
+  auto Height = DM.h;
+
+  SDL_Log("%d, %d", Width, Height);
+
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
+
+  win =
+      SDL_CreateWindow("RTS", 0, 0, DM.w, DM.h,
+                       SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL |
+                           SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED |
+                           SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
   if (win == nullptr) {
+    SDL_Log("SDL_CreateWindow failed");
     SDL_Quit();
     return;
   }
-
-  rend = nullptr;
   for (int i = 0; i < SDL_GetNumRenderDrivers(); ++i) {
     SDL_RendererInfo rendererInfo = {};
     SDL_GetRenderDriverInfo(i, &rendererInfo);
+
+    // SDL_Log( rendererInfo.name);
+
     if (rendererInfo.name != std::string("opengl")) {
       continue;
     }
@@ -68,6 +83,16 @@ void VideoContextSDL::setup() noexcept {
                                   SDL_RENDERER_TARGETTEXTURE);
     break;
   }
+
+  if (rend == nullptr) {
+    SDL_Log("SDL_CreateRenderer failed");
+    SDL_Quit();
+    return;
+  }
+
+  SDL_RendererInfo info{};
+  SDL_GetRendererInfo(rend, &info);
+  SDL_Log(info.name);
 }
 
 void VideoContextSDL::draw(const Map &) noexcept {
