@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+class IObject;
+
 class ICommand {
 
 public:
@@ -9,7 +11,7 @@ public:
 
 public:
   virtual Priority getPriority() const noexcept = 0;
-  virtual bool execute(size_t objectId) noexcept = 0;
+  virtual bool execute(IObject &) noexcept = 0;
   virtual ICommand *clone() const noexcept = 0;
   virtual ~ICommand() noexcept = default;
 };

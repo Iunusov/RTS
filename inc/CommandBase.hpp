@@ -2,24 +2,24 @@
 
 #include "Cloneable.hpp"
 #include "ICommand.hpp"
+#include "ObjectBase.hpp"
 
 #include <functional>
 
 #include "CppHacks.hpp"
 
-class CommandBase final : public Cloneable<CommandBase, ICommand, ICommand> {
+template <class T>
+class CommandBase final : public Cloneable<CommandBase<T>, ICommand, ICommand> {
 protected:
-  Priority priority = Priority::LONG_RUNNING;
+  ICommand::Priority priority = ICommand::Priority::LONG_RUNNING;
+  T t;
 
 private:
-  std::function<bool(size_t)> execute_command;
-
 public:
-  CommandBase(ICommand::Priority set_priority,
-              std::function<bool(size_t)> func) noexcept
-      : priority(set_priority), execute_command(func) {}
+  CommandBase(ICommand::Priority set_priority) noexcept
+      : priority(set_priority) {}
 
-  bool execute(size_t objectId) NCNOF { return execute_command(objectId); }
+  bool execute(IObject &obj) NCNOF { return t.execute(obj); }
 
-  Priority getPriority() CNOF { return priority; }
+  ICommand::Priority getPriority() CNOF { return priority; }
 };

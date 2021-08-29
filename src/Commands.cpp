@@ -1,28 +1,67 @@
 #include "CommandBase.hpp"
+#include "Config.hpp"
 #include "IMovableObject.hpp"
 #include "ObjectBase.hpp"
 
 #include <ctime>
+#include <functional>
 #include <random>
 
-const ICommand *command_idle{new CommandBase{
-    ICommand::Priority::IDLE, [](size_t objectId) {
-      auto obj = dynamic_cast<IMovableObject *>(ObjectBase::getById(objectId));
-      static std::mt19937 rng((unsigned int)time(NULL));
-      static std::uniform_int_distribution<int64_t> gen(0, 359);
-      if (gen(rng) == 50) {
-        return false;
-      }
-      obj->fire_angle = gen(rng);
-      return false;
-    }}};
+namespace IdleCommands {
+class CommandIdle final {
+  bool f = true;
 
-const ICommand *command_move{new CommandBase{
-    ICommand::Priority::LONG_RUNNING, [](size_t objectId) {
-      auto obj = dynamic_cast<IMovableObject *>(ObjectBase::getById(objectId));
-      if (obj) {
-        obj->moveTo(Coord{400, 300, 0});
-        return false;
-      }
-      return true;
-    }}};
+public:
+  bool execute(IObject &o) {
+    static std::mt19937 rng((unsigned int)time(NULL));
+    static std::uniform_int_distribution<int64_t> gen(0, 359);
+    double diff = (double)360.0 / (double)MODEL_EXECUTE_PER_SECOND;
+
+    IMovableObject &obj = dynamic_cast<IMovableObject &>(o);
+    if (f) {
+      obj.fire_angle += diff / 4.0;
+    } else {
+      obj.fire_angle -= diff / 4.0;
+    }
+
+    if (obj.fire_angle >= 360.0) {
+      f = false;
+    }
+    if (obj.fire_angle <= 0) {
+      f = true;
+    }
+    return false;
+  }
+};
+
+const ICommand *cmd{new CommandBase<CommandIdle>(ICommand::Priority::IDLE)};
+} // namespace IdleCommands
+
+namespace CommandMove {
+class CommandMove final {
+  bool f = true;
+
+public:
+  bool execute(IObject &o) {
+    IMovableObject &obj = dynamic_cast<IMovableObject &>(o);
+    if (f) {
+      obj.moveForward();
+    } else {
+      obj.moveBackward();
+    }
+    if (obj.getPosition().x > 500) {
+      f = false;
+    }
+    if (obj.getPosition().x < 0) {
+      f = true;
+    }
+    return false;
+
+    return true;
+  }
+};
+
+const ICommand *cmd{
+    new CommandBase<CommandMove>(ICommand::Priority::LONG_RUNNING)};
+
+} // namespace CommandMove

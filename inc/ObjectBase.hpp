@@ -22,17 +22,14 @@ private:
   const size_t id;
   std::queue<std::unique_ptr<ICommand>> cmdQueue;
   std::vector<std::unique_ptr<ICommand>> idleCmdQueue;
-  static std::unordered_map<size_t, IObject *> cache;
 
 public:
   int64_t health = 100;
   Coord position{};
 
 public:
-  static IObject *getById(size_t id) noexcept;
-
-  ObjectBase() noexcept : id{getGlobalId()} { cache.emplace(id, this); }
-  virtual ~ObjectBase() noexcept override { cache.erase(id); }
+  ObjectBase() noexcept : id{getGlobalId()} {}
+  virtual ~ObjectBase() noexcept override = default;
   size_t getId() CNOF { return id; }
   void execute() NCNOF;
   void acceptCommand(const ICommand &command) NCNOF;

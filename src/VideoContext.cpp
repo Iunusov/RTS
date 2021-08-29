@@ -5,7 +5,14 @@
 #include <SDL_timer.h>
 #include <SDL_video.h>
 
-#include <iostream>
+#include <array>
+#include <map>
+
+namespace {
+const std::array<std::string, 4> bestRenderers = {"direct3d11", "vulkan",
+                                                  "direct3d", "opengl"};
+std::map<std::string, int> renderPresense;
+} // namespace
 
 static inline int64_t carX(int64_t x, int64_t y, int64_t w) {
   return (x - y) * (int64_t)(w / 2.0);
@@ -34,20 +41,27 @@ void VideoContextSDL::delay() const noexcept {
 void VideoContextSDL::present() noexcept { SDL_RenderPresent(rend); }
 
 void VideoContextSDL::setup() noexcept {
-
+  SDL_Log("--------------------------------");
+  SDL_Log("VideoContextSDL::setup()");
+  SDL_Log("--------------------------------");
+  SDL_Log("\n");
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
     SDL_Log("SDL_Init failed");
     return;
   }
 
+  SDL_Log("Current Driver:");
   SDL_Log(SDL_GetCurrentVideoDriver());
+  SDL_Log("\n");
 
   SDL_DisplayMode DM;
   SDL_GetCurrentDisplayMode(0, &DM);
   auto Width = DM.w;
   auto Height = DM.h;
 
+  SDL_Log("Display Mode:");
   SDL_Log("%d, %d", Width, Height);
+  SDL_Log("\n");
 
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -67,22 +81,27 @@ void VideoContextSDL::setup() noexcept {
     SDL_Quit();
     return;
   }
+
+  int render_idx{-1};
+
   for (int i = 0; i < SDL_GetNumRenderDrivers(); ++i) {
     SDL_RendererInfo rendererInfo = {};
     SDL_GetRenderDriverInfo(i, &rendererInfo);
-
-    // SDL_Log( rendererInfo.name);
-
-    if (rendererInfo.name != std::string("opengl")) {
-      continue;
-    }
-
-    rend = SDL_CreateRenderer(win, i,
-                              SDL_RENDERER_ACCELERATED |
-                                  SDL_RENDERER_PRESENTVSYNC |
-                                  SDL_RENDERER_TARGETTEXTURE);
-    break;
+    renderPresense[rendererInfo.name] = i;
   }
+
+  for (const auto &rname : bestRenderers) {
+    const auto r = renderPresense.find(rname);
+    if (r != renderPresense.end()) {
+      render_idx = r->second;
+      break;
+    }
+  }
+
+  rend =
+      SDL_CreateRenderer(win, render_idx,
+                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
+                             SDL_RENDERER_TARGETTEXTURE);
 
   if (rend == nullptr) {
     SDL_Log("SDL_CreateRenderer failed");
@@ -92,7 +111,12 @@ void VideoContextSDL::setup() noexcept {
 
   SDL_RendererInfo info{};
   SDL_GetRendererInfo(rend, &info);
+  SDL_Log("Renderer:");
   SDL_Log(info.name);
+  SDL_Log("\n");
+  SDL_Log("Done.");
+  SDL_Log("--------------------------------");
+  SDL_Log("\n");
 }
 
 void VideoContextSDL::draw(const Map &) noexcept {
@@ -129,6 +153,6 @@ void VideoContextSDL::draw(const IMovableObject &obj) noexcept {
 
   const SDL_Point center{150, 100};
 
-  SDL_RenderCopyEx(rend, gun, NULL, &dest, (int)obj.fireAngle(), &center,
+  SDL_RenderCopyEx(rend, gun, NULL, &dest, obj.fireAngle(), &center,
                    SDL_FLIP_NONE);
 }

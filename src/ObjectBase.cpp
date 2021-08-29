@@ -2,7 +2,7 @@
 
 void ObjectBase::acceptCommand(const ICommand &command) noexcept {
   if (command.getPriority() == ICommand::Priority::ONE_CYCLE) {
-    command.clone()->execute(id);
+    command.clone()->execute(*this);
     return;
   }
   if (command.getPriority() == ICommand::Priority::IDLE) {
@@ -15,23 +15,13 @@ void ObjectBase::acceptCommand(const ICommand &command) noexcept {
 
 void ObjectBase::execute() noexcept {
   for (auto &cmd : idleCmdQueue) {
-    cmd->execute(id);
+    cmd->execute(*this);
   }
   if (cmdQueue.empty()) {
     return;
   }
   std::unique_ptr<ICommand> &p = cmdQueue.front();
-  if (p->execute(id)) {
+  if (p->execute(*this)) {
     cmdQueue.pop();
   }
 }
-
-IObject *ObjectBase::getById(size_t id) noexcept {
-  auto res = cache.find(id);
-  if (res == std::end(cache)) {
-    return nullptr;
-  }
-  return res->second;
-}
-
-std::unordered_map<size_t, IObject *> ObjectBase::cache;
