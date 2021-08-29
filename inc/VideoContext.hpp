@@ -1,18 +1,29 @@
 #pragma once
 
+#include "Coord.hpp"
+#include "IMovableObject.hpp"
+#include "IVideoContext.hpp"
+
 #include <SDL.h>
 
-struct Coord;
-class TestObject;
-
-class VideoContext final {
+class VideoContextSDL final : public IVideoContext {
 private:
-  static VideoContext *instance;
+  static IVideoContext *instance;
   SDL_Renderer *rend = nullptr;
-  VideoContext(SDL_Renderer *rend) noexcept : rend(rend) {}
+  Coord cameraPosition;
+  SDL_Window *win = nullptr;
 
 public:
-  static void Create(SDL_Renderer *r) noexcept;
-  static VideoContext *GetInstance() noexcept { return instance; }
-  void draw(const Coord &camera, const TestObject &obj) noexcept;
+  static void Create() noexcept;
+  static IVideoContext *GetInstance() noexcept { return instance; }
+
+  ~VideoContextSDL() noexcept override;
+
+  void setCamera(const Coord &pos) noexcept override { cameraPosition = pos; }
+  void draw(const Map &obj) noexcept override;
+  void clear() noexcept override;
+  void delay() const noexcept override;
+  void present() noexcept override;
+  void draw(const IMovableObject &obj) noexcept override;
+  void setup() noexcept override;
 };

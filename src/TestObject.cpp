@@ -13,10 +13,6 @@ void TestObject::moveTo(const Coord &) noexcept {
   position.y += gen(rng);
 }
 
-void TestObject::draw(const Coord &camera, VideoContext &ctx) const noexcept {
-  ctx.draw(camera, *this);
-}
-
 TestObject::TestObject(const Coord &pos) noexcept {
   position = pos;
   acceptCommand(*command_idle);

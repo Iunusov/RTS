@@ -42,11 +42,11 @@ add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME}  PRIVATE SDL2-static SDL2_image  Threads::Threads)
+target_link_libraries(${PROJECT_NAME}  PRIVATE SDL2-static SDL2_image Threads::Threads)
 if (MSVC)
-target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX /MD)
 else()
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror -w -Wfatal-errors )
 endif()
 
 # VC Release folder hack

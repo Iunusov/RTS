@@ -14,5 +14,4 @@ public:
   TestObject(const Coord &pos) noexcept;
 
   void moveTo(const Coord &) NCNOF;
-  void draw(const Coord &camera, VideoContext &ctx) CNOF;
 };

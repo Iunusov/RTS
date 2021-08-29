@@ -4,7 +4,7 @@
 
 class ICommand;
 struct Coord;
-class VideoContext;
+class IVideoContext;
 
 class IObject {
 public:
@@ -14,5 +14,5 @@ public:
   virtual ~IObject() noexcept = default;
   virtual Coord getPosition() const noexcept = 0;
   virtual int64_t getHealth() const noexcept = 0;
-  virtual void draw(const Coord &camera, VideoContext &) const noexcept = 0;
+  virtual void draw(IVideoContext &) const noexcept = 0;
 };
