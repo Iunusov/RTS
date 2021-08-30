@@ -70,6 +70,8 @@ void VideoContextSDL::setup() noexcept {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
+  SDL_GL_SetSwapInterval(1);
+  SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
   win =
       SDL_CreateWindow("RTS", 0, 0, DM.w, DM.h,

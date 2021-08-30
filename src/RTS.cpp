@@ -1,29 +1,20 @@
-﻿#include <atomic>
-#include <chrono>
-#include <ctime>
-#include <iostream>
-#include <list>
-#include <mutex>
-#include <random>
-#include <thread>
+﻿#include <list>
 
-#include "CommandBase.hpp"
 #include "Renderer.hpp"
 #include "TestObject.hpp"
 #include "VideoContext.hpp"
 
-#include "Config.hpp"
 #include "Scroller.hpp"
 
-#undef main
+#include "Config.hpp"
 
 namespace CommandMove {
 extern const ICommand *cmd;
 }
 
-static std::mutex obj_mutex;
 static std::list<IObject *> Objects;
 
+#undef main
 int main(int, char **) {
   VideoContextSDL::Create();
   VideoContextSDL::GetInstance()->setup();
@@ -36,36 +27,13 @@ int main(int, char **) {
     o->acceptCommand(*CommandMove::cmd);
   }
 
-  static std::thread t{[]() {
-    while (true) {
-      const auto start = std::chrono::steady_clock::now();
-      {
-
-        const std::lock_guard<std::mutex> lock(obj_mutex);
-
-        for (auto &obj : Objects) {
-          obj->execute();
-        }
-      }
-      const auto end = std::chrono::steady_clock::now();
-      const size_t spent =
-          std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-              .count();
-
-      std::this_thread::sleep_for(
-          std::chrono::microseconds(MODEL_CYCLE_TIME_MICROSECONDS - spent));
-    }
-  }};
-  t.detach();
-
   Scroller scroller{};
 
   while (true) {
-    {
-      const std::lock_guard<std::mutex> lock(obj_mutex);
-      renderer.Render(scroller.GetPos(), Objects);
+    for (auto &obj : Objects) {
+      obj->execute();
     }
-    renderer.Delay();
+    renderer.Render(scroller.GetPos(), Objects);
     scroller.execute();
   }
 
