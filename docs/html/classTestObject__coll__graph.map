@@ -1,0 +1,12 @@
+<map id="TestObject" name="TestObject">
+<area shape="rect" id="node1" title=" " alt="" coords="226,497,317,524"/>
+<area shape="rect" id="node2" href="$classCloneable.html" title=" " alt="" coords="173,407,370,448"/>
+<area shape="rect" id="node3" href="$classIMovableObject.html" title=" " alt="" coords="128,303,252,329"/>
+<area shape="rect" id="node4" href="$classObjectBase.html" title=" " alt="" coords="74,213,170,240"/>
+<area shape="rect" id="node5" href="$classIObject.html" title=" " alt="" coords="5,124,73,151"/>
+<area shape="rect" id="node6" href="$structCoord.html" title=" " alt="" coords="192,124,252,151"/>
+<area shape="rect" id="node7" title=" " alt="" coords="110,5,177,32"/>
+<area shape="rect" id="node8" title=" " alt="" coords="194,213,261,240"/>
+<area shape="rect" id="node9" href="$classCloneable.html" title=" " alt="" coords="277,303,431,329"/>
+<area shape="rect" id="node10" href="$classB.html" title=" " alt="" coords="335,213,373,240"/>
+</map>

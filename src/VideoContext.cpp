@@ -130,8 +130,8 @@ void VideoContextSDL::draw(const Map &) noexcept {
 
   for (int64_t i(0); i < 8; i++) {
     for (int64_t j(0); j < 5; j++) {
-      dest.x = dest.w * i - cameraPosition.x;
-      dest.y = dest.h * j - cameraPosition.y;
+      dest.x = (int)(dest.w * i - cameraPosition.x);
+      dest.y = (int)(dest.h * j - cameraPosition.y);
       SDL_RenderCopy(rend, tex, NULL, &dest);
     }
   }
