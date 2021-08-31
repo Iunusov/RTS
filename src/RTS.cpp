@@ -16,11 +16,12 @@ static std::list<IObject *> Objects;
 static std::list<IObject *> lastRender;
 
 static void addTestData() {
-  Objects.emplace_back(new TestObject(Coord{200, 0}));
-  Objects.emplace_back(new TestObject(Coord{0, 600}));
-  Objects.emplace_back(new TestObject(Coord{700, 100}));
+  Objects.emplace_back(new TestObject(Coord{500, 500}));
+  Objects.emplace_back(new TestObject(Coord{0, 60}));
+  Objects.emplace_back(new TestObject(Coord{800, 1200}));
   for (auto o : Objects) {
     o->acceptCommand(*CommandMove::cmd);
+    break;
   }
 }
 

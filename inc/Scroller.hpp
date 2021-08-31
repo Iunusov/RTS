@@ -27,20 +27,25 @@ public:
         switch (event.key.keysym.sym) {
 
         case SDLK_UP:
-          coord.y -= 20;
+          coord.y -= 50;
           break;
         case SDLK_DOWN:
-          coord.y += 20;
+          coord.y += 50;
           break;
         case SDLK_LEFT:
-          coord.x -= 20;
+          coord.x -= 50;
           break;
         case SDLK_RIGHT:
-          coord.x += 20;
+          coord.x += 50;
           break;
         default:
           break;
         }
+
+        coord.x = coord.x > 1920 ? 1920 : coord.x;
+        coord.y = coord.y > 1080 ? 1080 : coord.y;
+        coord.x = coord.x < 0 ? 0 : coord.x;
+        coord.y = coord.y < 0 ? 0 : coord.y;
       }
     }
   }

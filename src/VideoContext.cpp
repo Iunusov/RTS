@@ -123,14 +123,15 @@ void VideoContextSDL::setup() noexcept {
 }
 
 void VideoContextSDL::draw(const Map &) noexcept {
-  static auto tex = IMG_LoadTexture(rend, "assets/grass.png");
+  static auto tex =
+      IMG_LoadTexture(rend, "assets/grass.jpg");
   SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
-  for (int64_t i(0); i < 10; i++) {
-    for (int64_t j(0); j < 10; j++) {
-      dest.x = (int)(carX(i, j, dest.w) - cameraPosition.x);
-      dest.y = (int)(carY(i, j, (int64_t)(dest.h / 2.0)) - cameraPosition.y);
+  for (int64_t i(0); i < 8; i++) {
+    for (int64_t j(0); j < 5; j++) {
+      dest.x = dest.w * i - cameraPosition.x;
+      dest.y = dest.h * j - cameraPosition.y;
       SDL_RenderCopy(rend, tex, NULL, &dest);
     }
   }
