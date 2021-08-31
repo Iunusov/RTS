@@ -1,5 +1,6 @@
 #pragma once
 
-constexpr const size_t MODEL_EXECUTE_PER_SECOND{60};
-constexpr const size_t MODEL_CYCLE_TIME_MICROSECONDS{
-    (size_t)(1000000.0 / MODEL_EXECUTE_PER_SECOND)};
+constexpr const auto MODEL_EXECUTE_PER_SECOND{200};
+
+constexpr const auto MODEL_CYCLE_TIME_MS{1000 / MODEL_EXECUTE_PER_SECOND};
+static_assert(MODEL_EXECUTE_PER_SECOND * MODEL_CYCLE_TIME_MS == 1000, "");

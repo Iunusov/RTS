@@ -15,7 +15,7 @@ private:
 public:
   Renderer2D(IVideoContext *ctx) noexcept : ctx{ctx} {}
 
-  void Delay() { ctx->delay(); }
+  void Delay(size_t ms) { ctx->delay(ms); }
 
   void Render(const Coord &pos, const std::list<IObject *> &Objects) noexcept {
     ctx->clear();

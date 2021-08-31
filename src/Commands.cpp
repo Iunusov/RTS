@@ -49,15 +49,13 @@ public:
     } else {
       obj.moveBackward();
     }
-    if (obj.getPosition().x > 500) {
+    if (obj.getPosition().x > 700) {
       f = false;
     }
     if (obj.getPosition().x < 0) {
       f = true;
     }
     return false;
-
-    return true;
   }
 };
 

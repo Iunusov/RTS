@@ -1,4 +1,5 @@
 #include "VideoContext.hpp"
+#include "IMovableObject.hpp"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -33,9 +34,9 @@ VideoContextSDL::~VideoContextSDL() noexcept {
 
 void VideoContextSDL::clear() noexcept { SDL_RenderClear(rend); }
 
-void VideoContextSDL::delay() const noexcept {
+void VideoContextSDL::delay(size_t ms) const noexcept {
   // calculates to 60 fps
-  SDL_Delay((int)(1000.0 / 60.0));
+  SDL_Delay((uint32_t)ms);
 }
 
 void VideoContextSDL::present() noexcept { SDL_RenderPresent(rend); }
@@ -135,26 +136,27 @@ void VideoContextSDL::draw(const Map &) noexcept {
   }
 }
 
-void VideoContextSDL::draw(const IMovableObject &obj) noexcept {
+void VideoContextSDL::draw(const IObject *obj) noexcept {
   static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
   SDL_Rect dest;
   SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
   dest.w /= 2;
   dest.h /= 2;
-  dest.x = static_cast<int>(obj.getPosition().x - cameraPosition.x);
-  dest.y = static_cast<int>(obj.getPosition().y - cameraPosition.y);
+  dest.x = static_cast<int>(obj->getPosition().x - cameraPosition.x);
+  dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
   SDL_RenderCopy(rend, panz, NULL, &dest);
 
   static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
   SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
-  dest.x = static_cast<int>(obj.getPosition().x - 40 - cameraPosition.x);
-  dest.y = static_cast<int>(obj.getPosition().y - cameraPosition.y);
+  dest.x = static_cast<int>(obj->getPosition().x - 40 - cameraPosition.x);
+  dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
   dest.w /= 2;
   dest.h /= 2;
   // SDL_RenderCopy(rend, gun, NULL, &dest);
 
   const SDL_Point center{150, 100};
 
-  SDL_RenderCopyEx(rend, gun, NULL, &dest, obj.fireAngle(), &center,
-                   SDL_FLIP_NONE);
+  SDL_RenderCopyEx(rend, gun, NULL, &dest,
+                   dynamic_cast<const IMovableObject *>(obj)->fireAngle(),
+                   &center, SDL_FLIP_NONE);
 }

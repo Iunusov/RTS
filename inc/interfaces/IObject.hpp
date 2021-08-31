@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 class ICommand;
 struct Coord;
@@ -15,4 +16,5 @@ public:
   virtual Coord getPosition() const noexcept = 0;
   virtual int64_t getHealth() const noexcept = 0;
   virtual void draw(IVideoContext &) const noexcept = 0;
+  virtual IObject *clone() const noexcept = 0;
 };
