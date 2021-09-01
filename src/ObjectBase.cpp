@@ -14,6 +14,7 @@ void ObjectBase::acceptCommand(const ICommand &command) noexcept {
 }
 
 void ObjectBase::execute() noexcept {
+  previousPosition = getPosition();
   for (auto &cmd : idleCmdQueue) {
     cmd->execute(*this);
   }

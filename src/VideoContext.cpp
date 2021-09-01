@@ -123,8 +123,7 @@ void VideoContextSDL::setup() noexcept {
 }
 
 void VideoContextSDL::draw(const Map &) noexcept {
-  static auto tex =
-      IMG_LoadTexture(rend, "assets/grass.jpg");
+  static auto tex = IMG_LoadTexture(rend, "assets/grass.jpg");
   SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 

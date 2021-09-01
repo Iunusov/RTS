@@ -29,10 +29,10 @@ void GameLoop::Start(const std::list<IObject *> &gameObjects) {
       const size_t spent =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
-      if (spent > MODEL_CYCLE_TIME_MS) {
+      if (spent > MODEL_CYCLE_TIME_MS - 2) {
         continue;
       }
-      static_assert(MODEL_CYCLE_TIME_MS >= 5, "");
+      static_assert(MODEL_CYCLE_TIME_MS >= 1, "");
       std::this_thread::sleep_for(
           std::chrono::milliseconds(MODEL_CYCLE_TIME_MS - spent));
     }

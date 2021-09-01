@@ -13,9 +13,21 @@ private:
 
 public:
   double fire_angle{};
+  double prev_fire_angle{};
+
+  // IMovableObject(const IMovableObject &src):
+  // prev_fire_angle{src.prev_fire_angle}{}
 
 public:
+  void execute() NCNOF {
+    prev_fire_angle = fire_angle;
+    ObjectBase::execute();
+  }
+
   virtual double fireAngle() const noexcept final { return fire_angle; }
+  virtual double prevFireAngle() const noexcept final {
+    return prev_fire_angle;
+  }
 
   virtual void moveForward() noexcept final { position.x += getDiff(); }
 

@@ -21,7 +21,6 @@ static void addTestData() {
   Objects.emplace_back(new TestObject(Coord{800, 1200}));
   for (auto o : Objects) {
     o->acceptCommand(*CommandMove::cmd);
-    break;
   }
 }
 
