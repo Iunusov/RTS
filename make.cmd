@@ -1,5 +1,4 @@
-git submodule init
-git submodule update
+git submodule update --init --force --remote  --recursive
 
 mkdir build
 cd build
