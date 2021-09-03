@@ -29,9 +29,9 @@ private:
 
 protected:
   Coord position{};
-  Coord previousPosition{};
 
 public:
+  Coord previousPosition{};
   ObjectBase(const ObjectBase &src) noexcept
       : id{src.id}, health{src.health}, position{src.position},
         previousPosition{src.previousPosition} {}
@@ -43,7 +43,6 @@ public:
   void acceptCommand(const ICommand &command) NCNOF;
   virtual int64_t getHealth() CNOF { return health; }
   Coord getPosition() CNOF { return position; }
-  Coord getPreviousPosition() CNOF { return previousPosition; }
   void setPosition(const Coord &pos) NCNOF { position = pos; }
   virtual void draw(IVideoContext &ctx) CNOF { ctx.draw(this); }
 };

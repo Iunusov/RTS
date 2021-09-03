@@ -11,7 +11,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (MSVC)
 add_compile_options(/O2 /DNDEBUG)
 else()
-add_compile_options(-O3 -fomit-frame-pointer -DNDEBUG -fno-exceptions -pipe)
+add_compile_options(-O3 -Og -ogdb -pipe)
 endif()
 
 # set pthreads

@@ -5,7 +5,8 @@
 
 #include "Coord.hpp"
 
-#include <list>
+#include <iostream>
+#include <vector>
 
 class Renderer2D final {
 private:
@@ -17,13 +18,23 @@ public:
 
   void Delay(size_t ms) { ctx->delay(ms); }
 
-  void Render(const Coord &pos, const std::list<IObject *> &Objects) noexcept {
+  void Render(const Coord &pos,
+              const std::vector<IObject *> &Objects) noexcept {
     ctx->clear();
     ctx->setCamera(pos);
     ctx->draw(map);
-    for (auto &obj : Objects) {
+    size_t count{0};
+    for (const auto &obj : Objects) {
+      if (obj->getPosition().x > pos.x + 1920 ||
+          obj->getPosition().y > pos.y + 1080 ||
+          obj->getPosition().x < pos.x - 400 ||
+          obj->getPosition().y < pos.y - 400) {
+        continue;
+      }
       obj->draw(*ctx);
+      ++count;
     }
+    std::cout << "objects in frame: " << count << std::endl;
     ctx->present();
   }
 };

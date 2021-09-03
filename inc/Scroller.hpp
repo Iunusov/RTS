@@ -41,11 +41,6 @@ public:
         default:
           break;
         }
-
-        coord.x = coord.x > 1920 ? 1920 : coord.x;
-        coord.y = coord.y > 1080 ? 1080 : coord.y;
-        coord.x = coord.x < 0 ? 0 : coord.x;
-        coord.y = coord.y < 0 ? 0 : coord.y;
       }
     }
   }

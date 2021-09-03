@@ -127,8 +127,8 @@ void VideoContextSDL::draw(const Map &) noexcept {
   SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
-  for (int64_t i(0); i < 8; i++) {
-    for (int64_t j(0); j < 5; j++) {
+  for (int64_t i(0); i < 80; i++) {
+    for (int64_t j(0); j < 50; j++) {
       dest.x = (int)(dest.w * i - cameraPosition.x);
       dest.y = (int)(dest.h * j - cameraPosition.y);
       SDL_RenderCopy(rend, tex, NULL, &dest);
@@ -140,23 +140,20 @@ void VideoContextSDL::draw(const IObject *obj) noexcept {
   static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
   SDL_Rect dest;
   SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
-  dest.w /= 2;
-  dest.h /= 2;
   dest.x = static_cast<int>(obj->getPosition().x - cameraPosition.x);
   dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
-  SDL_RenderCopy(rend, panz, NULL, &dest);
+
+  SDL_RenderCopyEx(rend, panz, NULL, &dest,
+                   dynamic_cast<const IMovableObject *>(obj)->getHeading(),
+                   nullptr, SDL_FLIP_NONE);
 
   static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
   SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
-  dest.x = static_cast<int>(obj->getPosition().x - 40 - cameraPosition.x);
+  dest.x = static_cast<int>(obj->getPosition().x - cameraPosition.x);
   dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
-  dest.w /= 2;
-  dest.h /= 2;
   // SDL_RenderCopy(rend, gun, NULL, &dest);
 
-  const SDL_Point center{150, 100};
-
   SDL_RenderCopyEx(rend, gun, NULL, &dest,
-                   dynamic_cast<const IMovableObject *>(obj)->fireAngle(),
-                   &center, SDL_FLIP_NONE);
+                   dynamic_cast<const IMovableObject *>(obj)->getHeading(),
+                   nullptr, SDL_FLIP_NONE);
 }
