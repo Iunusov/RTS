@@ -9,14 +9,16 @@
 #include "RenderData.hpp"
 
 #include "Config.hpp"
+#include "Coord.hpp"
 
 namespace {
 std::atomic_bool doGameLoop{false};
 }
 
-void GameLoop::Start(const std::list<IObject *> &gameObjects) {
+void GameLoop::Start(const std::list<IObject *> &gameObjects,
+                     const Scroller &rect) {
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects]() {
+  static auto th = std::thread([&gameObjects, &rect]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
@@ -24,7 +26,7 @@ void GameLoop::Start(const std::list<IObject *> &gameObjects) {
         o->execute();
       }
 
-      RenderData::PushRenderingData(gameObjects);
+      RenderData::PushRenderingData(gameObjects, rect.GetPos());
       const auto end = std::chrono::steady_clock::now();
       const size_t spent =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)

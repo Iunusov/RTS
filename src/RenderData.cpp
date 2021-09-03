@@ -9,14 +9,17 @@
 
 #include "IMovableObject.hpp"
 
+#include <atomic>
+
 namespace {
 
 std::vector<IObject *> buffer;
 std::mutex mtx;
 auto start = std::chrono::steady_clock::now();
+std::atomic_bool dataReady{false};
 
 constexpr inline long double lerp(const long double a, const long double b,
-                                  const long double t) noexcept {
+                             const long double t) noexcept {
   return (a + t * (b - a));
 }
 
@@ -58,21 +61,32 @@ void GetRenderData(std::vector<IObject *> &data) noexcept {
           (double)lerp(movable->prev_heading, movable->heading, t));
     }
   }
+  dataReady = false;
 }
 
-void PushRenderingData(const std::list<IObject *> &data) noexcept {
+void PushRenderingData(const std::list<IObject *> &data,
+                       const Coord &cam) noexcept {
+  if (dataReady) {
+    return;
+  }
   mtx.lock();
 
   for (size_t i(0); i < buffer.size(); ++i) {
     delete (buffer[i]);
   }
-  buffer.clear();
-  buffer.reserve(data.size());
+  buffer.resize(0);
   for (const auto &obj : data) {
+    if (obj->getPosition().x > cam.x + 1920 ||
+        obj->getPosition().y > cam.y + 1080 ||
+        obj->getPosition().x < cam.x - 400 ||
+        obj->getPosition().y < cam.y - 400) {
+      continue;
+    }
     buffer.emplace_back(obj->clone());
   }
   start = std::chrono::steady_clock::now();
   mtx.unlock();
+  dataReady = true;
 }
 
 } // namespace RenderData

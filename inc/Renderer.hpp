@@ -5,7 +5,7 @@
 
 #include "Coord.hpp"
 
-#include <iostream>
+//#include <iostream>
 #include <vector>
 
 class Renderer2D final {
@@ -23,18 +23,11 @@ public:
     ctx->clear();
     ctx->setCamera(pos);
     ctx->draw(map);
-    size_t count{0};
     for (const auto &obj : Objects) {
-      if (obj->getPosition().x > pos.x + 1920 ||
-          obj->getPosition().y > pos.y + 1080 ||
-          obj->getPosition().x < pos.x - 400 ||
-          obj->getPosition().y < pos.y - 400) {
-        continue;
-      }
+
       obj->draw(*ctx);
-      ++count;
     }
-    std::cout << "objects in frame: " << count << std::endl;
+    // std::cout << "objects in frame: " << Objects.size() << std::endl;
     ctx->present();
   }
 };

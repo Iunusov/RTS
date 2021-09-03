@@ -9,6 +9,7 @@ namespace RenderData {
 
 void GetRenderData(std::vector<IObject *> &data) noexcept;
 
-void PushRenderingData(const std::list<IObject *> &data) noexcept;
+void PushRenderingData(const std::list<IObject *> &data,
+                       const Coord &) noexcept;
 
 } // namespace RenderData

@@ -4,7 +4,7 @@ mkdir build
 cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build .  --config Release
+cmake --build . -j8  --config Release
 
 cd ..
 

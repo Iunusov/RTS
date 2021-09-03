@@ -38,13 +38,16 @@ int main(int, char **) {
   Renderer2D renderer{VideoContextSDL::GetInstance()};
 
   addTestData();
-  GameLoop::Start(Objects);
 
   Scroller scroller{};
+  GameLoop::Start(Objects, scroller);
+
   while (true) {
+    scroller.execute();
+
     const auto expectedMS{1000.0 / 60.0};
     const auto start{std::chrono::steady_clock::now()};
-    scroller.execute();
+
     RenderData::GetRenderData(lastRender);
     renderer.Render(scroller.GetPos(), lastRender);
     const auto end{std::chrono::steady_clock::now()};

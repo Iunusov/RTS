@@ -4,11 +4,18 @@
 
 #include <SDL.h>
 
+#include <mutex>
 class Scroller final {
+private:
   Coord coord;
+  mutable std::mutex mtx;
 
 public:
-  Coord GetPos() const noexcept { return coord; }
+  Coord GetPos() const noexcept {
+
+    const std::lock_guard<std::mutex> lock(mtx);
+    return coord;
+  }
 
   void execute() noexcept {
 
@@ -23,6 +30,7 @@ public:
       }
 
       Coord tmp(coord);
+      const std::lock_guard<std::mutex> lock(mtx);
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
 
