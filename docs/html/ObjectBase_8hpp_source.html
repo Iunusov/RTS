@@ -71,20 +71,20 @@ $(function() {
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;Cloneable.hpp&quot;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;Coord.hpp&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;CppHacks.hpp&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;ICommand.hpp&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;IObject.hpp&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;IVideoContext.hpp&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;queue&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;Cloneable.hpp&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;Coord.hpp&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;CppHacks.hpp&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;ICommand.hpp&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;IObject.hpp&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;Math.hpp&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;CommandQueue.hpp&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;Renderer.hpp&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">size_t</span> getGlobalId() noexcept {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">size_t</span> getGlobalId() noexcept {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">size_t</span> <span class="keywordtype">id</span>{0};</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordflow">return</span> ++id;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
@@ -93,28 +93,44 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classObjectBase.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="classObjectBase.html">ObjectBase</a> : <span class="keyword">public</span> <a class="code" href="classIObject.html">IObject</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> <span class="keywordtype">id</span>{getGlobalId()};</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::queue&lt;std::unique_ptr&lt;ICommand&gt;&gt; cmdQueue;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::vector&lt;std::unique_ptr&lt;ICommand&gt;&gt; idleCmdQueue;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  int64_t health = 100;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  int64_t health = 100;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="structCoord.html">Coord</a> position{};</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="classObjectBase.html">ObjectBase</a>(<span class="keyword">const</span> <a class="code" href="classObjectBase.html">ObjectBase</a> &amp;src) noexcept</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      : <span class="keywordtype">id</span>{src.id}, health{src.health}, position{src.position} {}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="classObjectBase.html">ObjectBase</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">size_t</span> getId() CNOF { <span class="keywordflow">return</span> id; }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> execute() NCNOF;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> acceptCommand(<span class="keyword">const</span> <a class="code" href="classICommand.html">ICommand</a> &amp;command) NCNOF;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keyword">virtual</span> int64_t getHealth() CNOF { <span class="keywordflow">return</span> health; }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="structCoord.html">Coord</a> getPosition() CNOF { <span class="keywordflow">return</span> position; }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> draw(<a class="code" href="classIVideoContext.html">IVideoContext</a> &amp;ctx) CNOF { ctx.draw(<span class="keyword">this</span>); }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;};</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="structCoord.html">Coord</a> position{};</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">double</span> heading{};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="structCoord.html">Coord</a> previousPosition{};</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">double</span> previousHeading{};</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="classCommandQueue.html">CommandQueue</a> cmds;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">void</span> approx(<span class="keywordtype">double</span> timeDiff) noexcept <span class="keyword">override</span> {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    setPosition(<a class="code" href="structCoord.html">Coord</a>{(Math::lerp(previousPosition.x, position.x, timeDiff)),</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                      (Math::lerp(previousPosition.y, position.y, timeDiff))});</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    setHeading((<span class="keywordtype">double</span>)Math::lerp(previousHeading, heading, timeDiff));</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> teleportTo(<span class="keyword">const</span> <a class="code" href="structCoord.html">Coord</a> &amp;pos) NCNOF {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    previousPosition = pos;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    position = pos;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">size_t</span> getId() CNOF { <span class="keywordflow">return</span> id; }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> int64_t getHealth() CNOF { <span class="keywordflow">return</span> health; }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="structCoord.html">Coord</a> getPosition() CNOF { <span class="keywordflow">return</span> position; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> setPosition(<span class="keyword">const</span> <a class="code" href="structCoord.html">Coord</a> &amp;pos) NCNOF { position = pos; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">double</span> getHeading() CNOF { <span class="keywordflow">return</span> heading; }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> setHeading(<span class="keywordtype">double</span> angle) NCNOF { heading = angle; };</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> execute() noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">void</span> acceptCommand(<span class="keyword">const</span> <a class="code" href="classICommand.html">ICommand</a> &amp;command) NCNOF;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">void</span> draw(<a class="code" href="classIVideoContext.html">IVideoContext</a> &amp;ctx) NCNOF { ctx.draw(<span class="keyword">this</span>); }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">bool</span> isVisible(<span class="keyword">const</span> <a class="code" href="classIVideoContext.html">IVideoContext</a> &amp;ctx) CNOF { <span class="keywordflow">return</span> ctx.isVisible(*<span class="keyword">this</span>); }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassICommand_html"><div class="ttname"><a href="classICommand.html">ICommand</a></div><div class="ttdef"><b>Definition:</b> ICommand.hpp:7</div></div>
+<div class="ttc" id="aclassCommandQueue_html"><div class="ttname"><a href="classCommandQueue.html">CommandQueue</a></div><div class="ttdef"><b>Definition:</b> CommandQueue.hpp:10</div></div>
 <div class="ttc" id="aclassIObject_html"><div class="ttname"><a href="classIObject.html">IObject</a></div><div class="ttdef"><b>Definition:</b> IObject.hpp:10</div></div>
 <div class="ttc" id="aclassIVideoContext_html"><div class="ttname"><a href="classIVideoContext.html">IVideoContext</a></div><div class="ttdef"><b>Definition:</b> IVideoContext.hpp:8</div></div>
 <div class="ttc" id="aclassObjectBase_html"><div class="ttname"><a href="classObjectBase.html">ObjectBase</a></div><div class="ttdef"><b>Definition:</b> ObjectBase.hpp:22</div></div>

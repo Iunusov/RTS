@@ -95,12 +95,30 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>acceptCommand
 <tr class="memitem:a8626faf2d608e706ab702a979f01379a"><td class="memItemLeft" align="right" valign="top"><a id="a8626faf2d608e706ab702a979f01379a"></a>
 virtual <a class="el" href="structCoord.html">Coord</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getPosition</b> () const noexcept=0</td></tr>
 <tr class="separator:a8626faf2d608e706ab702a979f01379a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa75f7ca0d5c941e621d3cf0424acdc1d"><td class="memItemLeft" align="right" valign="top"><a id="aa75f7ca0d5c941e621d3cf0424acdc1d"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setPosition</b> (const <a class="el" href="structCoord.html">Coord</a> &amp;) noexcept=0</td></tr>
+<tr class="separator:aa75f7ca0d5c941e621d3cf0424acdc1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a885fec2cc3fb636fd448a147727e7d56"><td class="memItemLeft" align="right" valign="top"><a id="a885fec2cc3fb636fd448a147727e7d56"></a>
 virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>getHealth</b> () const noexcept=0</td></tr>
 <tr class="separator:a885fec2cc3fb636fd448a147727e7d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab081a31033cf9b82410baf29841a3f9f"><td class="memItemLeft" align="right" valign="top"><a id="ab081a31033cf9b82410baf29841a3f9f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>draw</b> (<a class="el" href="classIVideoContext.html">IVideoContext</a> &amp;) const noexcept=0</td></tr>
-<tr class="separator:ab081a31033cf9b82410baf29841a3f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5157abc0069c57199a60a4ba332cb89b"><td class="memItemLeft" align="right" valign="top"><a id="a5157abc0069c57199a60a4ba332cb89b"></a>
+virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getHeading</b> () const noexcept=0</td></tr>
+<tr class="separator:a5157abc0069c57199a60a4ba332cb89b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5083043c3b22cbf8d91cef5e9b0c2c6"><td class="memItemLeft" align="right" valign="top"><a id="aa5083043c3b22cbf8d91cef5e9b0c2c6"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setHeading</b> (double) noexcept=0</td></tr>
+<tr class="separator:aa5083043c3b22cbf8d91cef5e9b0c2c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d453d58ed4cbd3021bb6c12b0371a2e"><td class="memItemLeft" align="right" valign="top"><a id="a5d453d58ed4cbd3021bb6c12b0371a2e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>teleportTo</b> (const <a class="el" href="structCoord.html">Coord</a> &amp;pos) noexcept=0</td></tr>
+<tr class="separator:a5d453d58ed4cbd3021bb6c12b0371a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55cffcb76a20af062387d533aa6673b1"><td class="memItemLeft" align="right" valign="top"><a id="a55cffcb76a20af062387d533aa6673b1"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>approx</b> (double timeDIff) noexcept=0</td></tr>
+<tr class="separator:a55cffcb76a20af062387d533aa6673b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a831b4019771ebf6d97c94f778fba96df"><td class="memItemLeft" align="right" valign="top"><a id="a831b4019771ebf6d97c94f778fba96df"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>draw</b> (<a class="el" href="classIVideoContext.html">IVideoContext</a> &amp;) noexcept=0</td></tr>
+<tr class="separator:a831b4019771ebf6d97c94f778fba96df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad16271c8bc21720720c04d7bcff15679"><td class="memItemLeft" align="right" valign="top"><a id="ad16271c8bc21720720c04d7bcff15679"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isVisible</b> (const <a class="el" href="classIVideoContext.html">IVideoContext</a> &amp;) const noexcept=0</td></tr>
+<tr class="separator:ad16271c8bc21720720c04d7bcff15679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8a8fe38667e7a4581b49a3601640b2c"><td class="memItemLeft" align="right" valign="top"><a id="af8a8fe38667e7a4581b49a3601640b2c"></a>
 virtual <a class="el" href="classIObject.html">IObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const noexcept=0</td></tr>
 <tr class="separator:af8a8fe38667e7a4581b49a3601640b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -5,7 +5,6 @@
 class IObject;
 
 class ICommand {
-
 public:
   enum class Priority { ONE_CYCLE, IDLE, LONG_RUNNING };
 

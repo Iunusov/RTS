@@ -1,5 +1,4 @@
 #include "VideoContext.hpp"
-#include "IMovableObject.hpp"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -8,6 +7,8 @@
 
 #include <array>
 #include <map>
+
+#include "IMovableObject.hpp"
 
 namespace {
 const std::array<std::string, 4> bestRenderers = {"direct3d11", "vulkan",
@@ -120,6 +121,9 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("Done.");
   SDL_Log("--------------------------------");
   SDL_Log("\n");
+
+  SDL_GetWindowSize(win, &w, &h);
+  SDL_Log("%dx%d", w, h);
 }
 
 void VideoContextSDL::draw(const Map &) noexcept {

@@ -21,6 +21,9 @@ virtual void {\bfseries draw} (const \mbox{\hyperlink{classMap}{Map}} \&obj) noe
 \mbox{\Hypertarget{classIVideoContext_a8604c2ed35fdbc1c84e423e8614351bd}\label{classIVideoContext_a8604c2ed35fdbc1c84e423e8614351bd}} 
 virtual void {\bfseries draw} (const \mbox{\hyperlink{classIObject}{I\+Object}} $\ast$obj) noexcept=0
 \item 
+\mbox{\Hypertarget{classIVideoContext_a5be03808dc2fa3f22ac8969dd84f2daf}\label{classIVideoContext_a5be03808dc2fa3f22ac8969dd84f2daf}} 
+virtual bool {\bfseries is\+Visible} (const \mbox{\hyperlink{classIObject}{I\+Object}} \&) const noexcept=0
+\item 
 \mbox{\Hypertarget{classIVideoContext_a4cec31a4f4d7300db1dc49ae6af27a39}\label{classIVideoContext_a4cec31a4f4d7300db1dc49ae6af27a39}} 
 virtual void {\bfseries present} () noexcept=0
 \item 
@@ -29,6 +32,15 @@ virtual void {\bfseries clear} () noexcept=0
 \item 
 \mbox{\Hypertarget{classIVideoContext_adc885800d564703769e4f72adc3a126c}\label{classIVideoContext_adc885800d564703769e4f72adc3a126c}} 
 virtual void {\bfseries set\+Camera} (const \mbox{\hyperlink{structCoord}{Coord}} \&) noexcept=0
+\item 
+\mbox{\Hypertarget{classIVideoContext_a514daba3be9d1cc437c1901788129425}\label{classIVideoContext_a514daba3be9d1cc437c1901788129425}} 
+virtual \mbox{\hyperlink{structCoord}{Coord}} {\bfseries get\+Camera\+Pos} () const noexcept=0
+\item 
+\mbox{\Hypertarget{classIVideoContext_a9a8d0b5cadaeb875426460dde9a29b1e}\label{classIVideoContext_a9a8d0b5cadaeb875426460dde9a29b1e}} 
+virtual int {\bfseries get\+Width} () const noexcept=0
+\item 
+\mbox{\Hypertarget{classIVideoContext_ac74312ce48a2ed50e777a362e9497413}\label{classIVideoContext_ac74312ce48a2ed50e777a362e9497413}} 
+virtual int {\bfseries get\+Heigt} () const noexcept=0
 \item 
 \mbox{\Hypertarget{classIVideoContext_a5fe0c67096f83a2df7240d97fe13243b}\label{classIVideoContext_a5fe0c67096f83a2df7240d97fe13243b}} 
 virtual void {\bfseries delay} (size\+\_\+t) const noexcept=0

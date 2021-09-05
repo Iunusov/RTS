@@ -5,20 +5,20 @@
 #include <list>
 #include <thread>
 
-#include "IObject.hpp"
-#include "RenderData.hpp"
-
 #include "Config.hpp"
 #include "Coord.hpp"
+#include "IObject.hpp"
+#include "RenderData.hpp"
+#include "Renderer.hpp"
 
 namespace {
 std::atomic_bool doGameLoop{false};
 }
 
 void GameLoop::Start(const std::list<IObject *> &gameObjects,
-                     const Scroller &rect) {
+                     const Renderer2D &rend) {
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects, &rect]() {
+  static auto th = std::thread([&gameObjects, &rend]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
@@ -26,7 +26,7 @@ void GameLoop::Start(const std::list<IObject *> &gameObjects,
         o->execute();
       }
 
-      RenderData::PushRenderingData(gameObjects, rect.GetPos());
+      RenderData::PushRenderingData(gameObjects, rend);
       const auto end = std::chrono::steady_clock::now();
       const size_t spent =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)

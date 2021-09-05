@@ -76,16 +76,15 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">class </span><a class="code" href="classIObject.html">IObject</a>;</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
 <div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="classICommand.html">    7</a></span>&#160;<span class="keyword">class </span><a class="code" href="classICommand.html">ICommand</a> {</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keyword">enum class</span> Priority { ONE_CYCLE, IDLE, LONG_RUNNING };</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">virtual</span> Priority getPriority() <span class="keyword">const</span> noexcept = 0;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> execute(<a class="code" href="classIObject.html">IObject</a> &amp;) noexcept = 0;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classICommand.html">ICommand</a> *clone() <span class="keyword">const</span> noexcept = 0;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classICommand.html">ICommand</a>() noexcept = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;};</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">enum class</span> Priority { ONE_CYCLE, IDLE, LONG_RUNNING };</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">virtual</span> Priority getPriority() <span class="keyword">const</span> noexcept = 0;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> execute(<a class="code" href="classIObject.html">IObject</a> &amp;) noexcept = 0;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classICommand.html">ICommand</a> *clone() <span class="keyword">const</span> noexcept = 0;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classICommand.html">ICommand</a>() noexcept = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassICommand_html"><div class="ttname"><a href="classICommand.html">ICommand</a></div><div class="ttdef"><b>Definition:</b> ICommand.hpp:7</div></div>
 <div class="ttc" id="aclassIObject_html"><div class="ttname"><a href="classIObject.html">IObject</a></div><div class="ttdef"><b>Definition:</b> IObject.hpp:10</div></div>

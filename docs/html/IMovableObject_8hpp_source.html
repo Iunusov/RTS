@@ -76,22 +76,21 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="classIMovableObject.html">    6</a></span>&#160;<span class="keyword">class </span><a class="code" href="classIMovableObject.html">IMovableObject</a> : <span class="keyword">public</span> <a class="code" href="classObjectBase.html">ObjectBase</a> {</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  constexpr <span class="keywordtype">size_t</span> getDiff() <span class="keyword">const</span> noexcept {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    static_assert(400 % MODEL_EXECUTE_PER_SECOND == 0,</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                  <span class="stringliteral">&quot;only integer diff allowed&quot;</span>);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">return</span> 400 / MODEL_EXECUTE_PER_SECOND;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  }</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">double</span> fire_angle{};</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  <span class="keywordtype">double</span> prev_fire_angle{fire_angle};</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keywordtype">double</span> fire_angle{0};</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keywordtype">void</span> approx(<span class="keywordtype">double</span> timeDiff) NCNOF;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">void</span> execute() NCNOF;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">double</span> fireAngle() <span class="keyword">const</span> noexcept <span class="keyword">final</span> { <span class="keywordflow">return</span> fire_angle; }</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> moveForward() noexcept <span class="keyword">final</span> { position.x += getDiff(); }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> moveBackward() noexcept <span class="keyword">final</span> { position.x -= getDiff(); }</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">double</span> fireAngle() <span class="keyword">const</span> noexcept <span class="keyword">final</span>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> moveForward() noexcept <span class="keyword">final</span>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> moveBackward() noexcept <span class="keyword">final</span>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> rotateLeft() noexcept <span class="keyword">final</span>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> rotateRiht() noexcept <span class="keyword">final</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassObjectBase_html"><div class="ttname"><a href="classObjectBase.html">ObjectBase</a></div><div class="ttdef"><b>Definition:</b> ObjectBase.hpp:22</div></div>
 <div class="ttc" id="aclassIMovableObject_html"><div class="ttname"><a href="classIMovableObject.html">IMovableObject</a></div><div class="ttdef"><b>Definition:</b> IMovableObject.hpp:6</div></div>

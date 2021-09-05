@@ -5,5 +5,4 @@
 
 class TestObject final : public Cloneable<TestObject, IObject, IMovableObject> {
 public:
-  TestObject(const Coord &pos) noexcept;
 };

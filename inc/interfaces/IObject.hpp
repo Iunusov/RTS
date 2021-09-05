@@ -16,6 +16,11 @@ public:
   virtual Coord getPosition() const noexcept = 0;
   virtual void setPosition(const Coord &) noexcept = 0;
   virtual int64_t getHealth() const noexcept = 0;
-  virtual void draw(IVideoContext &) const noexcept = 0;
+  virtual double getHeading() const noexcept = 0;
+  virtual void setHeading(double) noexcept = 0;
+  virtual void teleportTo(const Coord &pos) noexcept = 0;
+  virtual void approx(double timeDIff) noexcept = 0;
+  virtual void draw(IVideoContext &) noexcept = 0;
+  virtual bool isVisible(const IVideoContext &) const noexcept = 0;
   virtual IObject *clone() const noexcept = 0;
 };

@@ -1,11 +1,11 @@
+#include <ctime>
+#include <functional>
+#include <random>
+
 #include "CommandBase.hpp"
 #include "Config.hpp"
 #include "IMovableObject.hpp"
 #include "ObjectBase.hpp"
-
-#include <ctime>
-#include <functional>
-#include <random>
 
 namespace IdleCommands {
 class CommandIdle final {

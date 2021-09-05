@@ -8,8 +8,3 @@
 namespace IdleCommands {
 extern const ICommand *cmd;
 }
-
-TestObject::TestObject(const Coord &pos) noexcept {
-  position = pos;
-  // acceptCommand(*IdleCommands::cmd);
-}

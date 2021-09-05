@@ -24,11 +24,29 @@ virtual void {\bfseries accept\+Command} (const \mbox{\hyperlink{classICommand}{
 \mbox{\Hypertarget{classIObject_a8626faf2d608e706ab702a979f01379a}\label{classIObject_a8626faf2d608e706ab702a979f01379a}} 
 virtual \mbox{\hyperlink{structCoord}{Coord}} {\bfseries get\+Position} () const noexcept=0
 \item 
+\mbox{\Hypertarget{classIObject_aa75f7ca0d5c941e621d3cf0424acdc1d}\label{classIObject_aa75f7ca0d5c941e621d3cf0424acdc1d}} 
+virtual void {\bfseries set\+Position} (const \mbox{\hyperlink{structCoord}{Coord}} \&) noexcept=0
+\item 
 \mbox{\Hypertarget{classIObject_a885fec2cc3fb636fd448a147727e7d56}\label{classIObject_a885fec2cc3fb636fd448a147727e7d56}} 
 virtual int64\+\_\+t {\bfseries get\+Health} () const noexcept=0
 \item 
-\mbox{\Hypertarget{classIObject_ab081a31033cf9b82410baf29841a3f9f}\label{classIObject_ab081a31033cf9b82410baf29841a3f9f}} 
-virtual void {\bfseries draw} (\mbox{\hyperlink{classIVideoContext}{I\+Video\+Context}} \&) const noexcept=0
+\mbox{\Hypertarget{classIObject_a5157abc0069c57199a60a4ba332cb89b}\label{classIObject_a5157abc0069c57199a60a4ba332cb89b}} 
+virtual double {\bfseries get\+Heading} () const noexcept=0
+\item 
+\mbox{\Hypertarget{classIObject_aa5083043c3b22cbf8d91cef5e9b0c2c6}\label{classIObject_aa5083043c3b22cbf8d91cef5e9b0c2c6}} 
+virtual void {\bfseries set\+Heading} (double) noexcept=0
+\item 
+\mbox{\Hypertarget{classIObject_a5d453d58ed4cbd3021bb6c12b0371a2e}\label{classIObject_a5d453d58ed4cbd3021bb6c12b0371a2e}} 
+virtual void {\bfseries teleport\+To} (const \mbox{\hyperlink{structCoord}{Coord}} \&pos) noexcept=0
+\item 
+\mbox{\Hypertarget{classIObject_a55cffcb76a20af062387d533aa6673b1}\label{classIObject_a55cffcb76a20af062387d533aa6673b1}} 
+virtual void {\bfseries approx} (double time\+D\+Iff) noexcept=0
+\item 
+\mbox{\Hypertarget{classIObject_a831b4019771ebf6d97c94f778fba96df}\label{classIObject_a831b4019771ebf6d97c94f778fba96df}} 
+virtual void {\bfseries draw} (\mbox{\hyperlink{classIVideoContext}{I\+Video\+Context}} \&) noexcept=0
+\item 
+\mbox{\Hypertarget{classIObject_ad16271c8bc21720720c04d7bcff15679}\label{classIObject_ad16271c8bc21720720c04d7bcff15679}} 
+virtual bool {\bfseries is\+Visible} (const \mbox{\hyperlink{classIVideoContext}{I\+Video\+Context}} \&) const noexcept=0
 \item 
 \mbox{\Hypertarget{classIObject_af8a8fe38667e7a4581b49a3601640b2c}\label{classIObject_af8a8fe38667e7a4581b49a3601640b2c}} 
 virtual \mbox{\hyperlink{classIObject}{I\+Object}} $\ast$ {\bfseries clone} () const noexcept=0

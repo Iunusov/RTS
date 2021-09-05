@@ -1,19 +1,19 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "Cloneable.hpp"
 #include "Coord.hpp"
 #include "CppHacks.hpp"
 #include "ICommand.hpp"
 #include "IObject.hpp"
-#include "IVideoContext.hpp"
+#include "Math.hpp"
 
-#include <memory>
-#include <queue>
-#include <unordered_map>
-#include <vector>
+#include "CommandQueue.hpp"
+#include "Renderer.hpp"
 
 namespace {
-size_t getGlobalId() noexcept {
+inline size_t getGlobalId() noexcept {
   static size_t id{0};
   return ++id;
 }
@@ -22,27 +22,38 @@ size_t getGlobalId() noexcept {
 class ObjectBase : public IObject {
 private:
   const size_t id{getGlobalId()};
-  std::queue<std::unique_ptr<ICommand>> cmdQueue;
-  std::vector<std::unique_ptr<ICommand>> idleCmdQueue;
 
   int64_t health = 100;
 
-protected:
   Coord position{};
+  double heading{};
+
+  Coord previousPosition{};
+  double previousHeading{};
+  CommandQueue cmds;
 
 public:
-  Coord previousPosition{};
-  ObjectBase(const ObjectBase &src) noexcept
-      : id{src.id}, health{src.health}, position{src.position},
-        previousPosition{src.previousPosition} {}
+  void approx(double timeDiff) noexcept override {
+    setPosition(Coord{(Math::lerp(previousPosition.x, position.x, timeDiff)),
+                      (Math::lerp(previousPosition.y, position.y, timeDiff))});
+    setHeading((double)Math::lerp(previousHeading, heading, timeDiff));
+  }
 
-  ObjectBase() = default;
+  void teleportTo(const Coord &pos) NCNOF {
+    previousPosition = pos;
+    position = pos;
+  }
 
   size_t getId() CNOF { return id; }
-  void execute() noexcept override;
-  void acceptCommand(const ICommand &command) NCNOF;
   virtual int64_t getHealth() CNOF { return health; }
   Coord getPosition() CNOF { return position; }
   void setPosition(const Coord &pos) NCNOF { position = pos; }
-  virtual void draw(IVideoContext &ctx) CNOF { ctx.draw(this); }
+  double getHeading() CNOF { return heading; }
+  void setHeading(double angle) NCNOF { heading = angle; };
+
+  void execute() noexcept override;
+  void acceptCommand(const ICommand &command) NCNOF;
+
+  void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
+  bool isVisible(const IVideoContext &ctx) CNOF { return ctx.isVisible(*this); }
 };

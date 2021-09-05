@@ -6,5 +6,6 @@ var searchData=
   ['commandbase_4',['CommandBase',['../classCommandBase.html',1,'']]],
   ['commandidle_5',['CommandIdle',['../classIdleCommands_1_1CommandIdle.html',1,'IdleCommands']]],
   ['commandmove_6',['CommandMove',['../classCommandMove_1_1CommandMove.html',1,'CommandMove']]],
-  ['coord_7',['Coord',['../structCoord.html',1,'']]]
+  ['commandqueue_7',['CommandQueue',['../classCommandQueue.html',1,'']]],
+  ['coord_8',['Coord',['../structCoord.html',1,'']]]
 ];

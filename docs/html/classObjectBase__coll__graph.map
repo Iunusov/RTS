@@ -1,6 +1,4 @@
 <map id="ObjectBase" name="ObjectBase">
-<area shape="rect" id="node1" title=" " alt="" coords="74,213,170,240"/>
-<area shape="rect" id="node2" href="$classIObject.html" title=" " alt="" coords="5,124,73,151"/>
-<area shape="rect" id="node3" href="$structCoord.html" title=" " alt="" coords="192,124,252,151"/>
-<area shape="rect" id="node4" title=" " alt="" coords="110,5,177,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,80,101,107"/>
+<area shape="rect" id="node2" href="$classIObject.html" title=" " alt="" coords="19,5,87,32"/>
 </map>

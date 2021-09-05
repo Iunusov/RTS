@@ -1,9 +1,8 @@
 #pragma once
 
+#include "Coord.hpp"
 #include "IObject.hpp"
 #include "IVideoContext.hpp"
-
-#include "Coord.hpp"
 
 //#include <iostream>
 #include <vector>
@@ -15,16 +14,20 @@ private:
 
 public:
   Renderer2D(IVideoContext *ctx) noexcept : ctx{ctx} {}
-
   void Delay(size_t ms) { ctx->delay(ms); }
 
-  void Render(const Coord &pos,
-              const std::vector<IObject *> &Objects) noexcept {
+  bool isVisible(const IObject &obj) const noexcept {
+    return obj.isVisible(*ctx);
+  }
+
+  void Render(const Coord &pos, const std::vector<IObject *> &Objects,
+              double timeDiff) noexcept {
+
     ctx->clear();
     ctx->setCamera(pos);
     ctx->draw(map);
     for (const auto &obj : Objects) {
-
+      obj->approx(timeDiff);
       obj->draw(*ctx);
     }
     // std::cout << "objects in frame: " << Objects.size() << std::endl;
