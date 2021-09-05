@@ -7,10 +7,12 @@
 #include "CppHacks.hpp"
 #include "ICommand.hpp"
 #include "IObject.hpp"
+#include "IVideoContext.hpp"
 #include "Math.hpp"
 
 #include "CommandQueue.hpp"
-#include "Renderer.hpp"
+
+#include <iostream>
 
 namespace {
 inline size_t getGlobalId() noexcept {

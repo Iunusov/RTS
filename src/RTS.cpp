@@ -1,14 +1,13 @@
-﻿#include "Renderer.hpp"
-#include <chrono>
-#include <random>
+﻿#include <chrono>
 #include <vector>
 
 #include "Config.hpp"
 #include "GameLoop.hpp"
 #include "RenderData.hpp"
+#include "Renderer2D.hpp"
 #include "Scroller.hpp"
 #include "TestObject.hpp"
-#include "VideoContext.hpp"
+#include "VideoContextSDL.hpp"
 
 #include "Math.hpp"
 
@@ -20,16 +19,33 @@ static std::list<IObject *> Objects;
 static std::vector<IObject *> lastRender;
 
 static void addTestData() {
-  static std::mt19937 rng((unsigned int)time(NULL));
-  static std::uniform_int_distribution<int64_t> gen(0, 30000);
-  for (size_t i(0); i < 5000; i++) {
-    auto *obj = new TestObject();
-    obj->teleportTo(Coord{(double)gen(rng), (double)gen(rng)});
-    Objects.emplace_back(obj);
+  constexpr const auto density{400};
+  constexpr const auto MAX_COUNT{50000}; // 50 000
+
+  size_t count{0};
+  for (size_t i(1); i < MAX_COORD / density; i++) {
+    if (count == MAX_COUNT) {
+      break;
+    }
+    for (size_t j(1); j < MAX_COORD / density; j++) {
+      if (count == MAX_COUNT) {
+        break;
+      }
+      auto *obj = new TestObject();
+      Coord coord = Coord{(decltype(coord.x))(i * density),
+                          (decltype(coord.y))(j * density)};
+      obj->setHeading((double)(count % 360));
+      obj->teleportTo(coord);
+      Objects.emplace_back(obj);
+      ++count;
+    }
   }
   for (auto o : Objects) {
     o->acceptCommand(*CommandMove::cmd);
   }
+  std::cout << std::endl
+            << "created " << Objects.size() << " units" << std::endl
+            << std::endl;
 }
 
 #undef main
@@ -38,10 +54,11 @@ int main(int, char **) {
 
   VideoContextSDL::Create();
   VideoContextSDL::GetInstance()->setup();
-  Renderer2D renderer{VideoContextSDL::GetInstance()};
+  IRenderer *renderer = new Renderer2D{VideoContextSDL::GetInstance()};
 
   Scroller scroller{};
-  GameLoop::Start(Objects, renderer);
+  GameLoop game;
+  game.Start(Objects, *renderer);
 
   while (true) {
     scroller.execute();
@@ -51,8 +68,9 @@ int main(int, char **) {
 
     double timeDiff{};
     RenderData::GetRenderData(lastRender, timeDiff);
+    renderer->Render(scroller.GetPos(), lastRender, timeDiff);
+    // std::cout << "Rendered objects: " << lastRender.size() << std::endl;
 
-    renderer.Render(scroller.GetPos(), lastRender, timeDiff);
     const auto end{std::chrono::steady_clock::now()};
     const auto elapsedMS{(size_t)(
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
@@ -62,7 +80,7 @@ int main(int, char **) {
       continue;
     }
 
-    renderer.Delay((size_t)(expectedMS - elapsedMS));
+    renderer->Delay((size_t)(expectedMS - elapsedMS));
   }
 
   return 0;

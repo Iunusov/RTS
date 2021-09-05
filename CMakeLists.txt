@@ -11,7 +11,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (MSVC)
 add_compile_options(/O2 /DNDEBUG)
 else()
-add_compile_options(-O3 -Og -ogdb -pipe)
+add_compile_options(-Ofast -fomit-frame-pointer -pipe)
 endif()
 
 # set pthreads
@@ -36,8 +36,14 @@ add_subdirectory(deps/SDL/SDL_Image)
 
 # add executable
 include_directories(inc)
+include_directories(inc/game)
+include_directories(inc/kernel)
+include_directories(inc/impl/2D)
 include_directories(inc/interfaces)
 aux_source_directory(src SUB_SOURCES)
+aux_source_directory(src/game SUB_SOURCES)
+aux_source_directory(src/kernel SUB_SOURCES)
+aux_source_directory(src/impl/2D SUB_SOURCES)
 add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options

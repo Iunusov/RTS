@@ -4,13 +4,13 @@
 #include <vector>
 
 #include "IObject.hpp"
-#include "Renderer.hpp"
+#include "IRenderer.hpp"
 
 namespace RenderData {
 
 void GetRenderData(std::vector<IObject *> &data, double &timeDiff) noexcept;
 
 void PushRenderingData(const std::list<IObject *> &data,
-                       const Renderer2D &) noexcept;
+                       const IRenderer &) noexcept;
 
 } // namespace RenderData

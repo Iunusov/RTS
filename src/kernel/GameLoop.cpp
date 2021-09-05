@@ -8,21 +8,24 @@
 #include "Config.hpp"
 #include "Coord.hpp"
 #include "IObject.hpp"
+#include "IRenderer.hpp"
 #include "RenderData.hpp"
-#include "Renderer.hpp"
+
+#include <iostream>
 
 namespace {
 std::atomic_bool doGameLoop{false};
 }
 
-void GameLoop::Start(const std::list<IObject *> &gameObjects,
-                     const Renderer2D &rend) {
+void GameLoop::Start(std::list<IObject *> &gameObjects, const IRenderer &rend) {
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects, &rend]() {
+  static auto th = std::thread([&gameObjects, &rend, this]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
       for (auto &&o : gameObjects) {
+        Collisions::getInstance()->update(*o);
+
         o->execute();
       }
 
@@ -31,6 +34,7 @@ void GameLoop::Start(const std::list<IObject *> &gameObjects,
       const size_t spent =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
+      // std::cout<<"spent: "<<spent<<"ms"<<std::endl;
       if (spent >= MODEL_CYCLE_TIME_MS) {
         continue;
       }

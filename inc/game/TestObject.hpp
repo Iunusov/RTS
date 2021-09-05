@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Coord.hpp"
 #include "IMovableObject.hpp"
+#include "IObject.hpp"
 
 class TestObject final : public Cloneable<TestObject, IObject, IMovableObject> {
 public:

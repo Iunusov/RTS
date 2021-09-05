@@ -18,6 +18,11 @@ public:
     return coord;
   }
 
+  void SetPos(const Coord &pos) noexcept {
+    const std::lock_guard<std::mutex> lock(mtx);
+    coord = pos;
+  }
+
   void execute() noexcept {
     // Get the next event
     SDL_Event event;

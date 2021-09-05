@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "Collisions.hpp"
 #include "Math.hpp"
 
 namespace {
@@ -28,13 +29,29 @@ void IMovableObject::moveForward() noexcept {
   Coord result = getPosition();
   result.x += (getDiff() * cos(getHeading() * (Math::PI_Constant / 180.0)));
   result.y += (getDiff() * sin(getHeading() * (Math::PI_Constant / 180.0)));
+  if (Collisions::getInstance()->checkCollisions(result, getId())) {
+    return;
+  }
   setPosition(result);
 }
 
 void IMovableObject::moveBackward() noexcept {
   Coord result = getPosition();
-  result.x -= (getDiff() * cos(getHeading() * (Math::PI_Constant / 180.0)));
-  result.y -= (getDiff() * sin(getHeading() * (Math::PI_Constant / 180.0)));
+  const auto diffX =
+      (getDiff() * cos(getHeading() * (Math::PI_Constant / 180.0)));
+  const auto diffY =
+      (getDiff() * sin(getHeading() * (Math::PI_Constant / 180.0)));
+  if (result.x < diffX) {
+    return;
+  }
+  if (result.y < diffY) {
+    return;
+  }
+  result.x -= diffX;
+  result.y -= diffY;
+  if (Collisions::getInstance()->checkCollisions(result, getId())) {
+    return;
+  }
   setPosition(result);
 }
 void IMovableObject::rotateLeft() noexcept {
@@ -44,4 +61,4 @@ void IMovableObject::rotateLeft() noexcept {
 void IMovableObject::rotateRiht() noexcept {
   setHeading(getHeading() +
              (double)360.0 / 10 / (double)MODEL_EXECUTE_PER_SECOND);
-};
+}

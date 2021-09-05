@@ -1,4 +1,4 @@
-#include "VideoContext.hpp"
+#include "VideoContextSDL.hpp"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -11,8 +11,8 @@
 #include "IMovableObject.hpp"
 
 namespace {
-const std::array<std::string, 4> bestRenderers = {"direct3d11", "vulkan",
-                                                  "direct3d", "opengl"};
+const std::array<std::string, 5> bestRenderers = {
+    "direct3d11", "vulkan", "direct3d", "opengl", "opengles2"};
 std::map<std::string, int> renderPresense;
 } // namespace
 
@@ -144,8 +144,10 @@ void VideoContextSDL::draw(const IObject *obj) noexcept {
   static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
   SDL_Rect dest;
   SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
-  dest.x = static_cast<int>(obj->getPosition().x - cameraPosition.x);
-  dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
+  dest.x =
+      static_cast<int>(obj->getPosition().x - dest.w / 2 - cameraPosition.x);
+  dest.y =
+      static_cast<int>(obj->getPosition().y - dest.h / 2 - cameraPosition.y);
 
   SDL_RenderCopyEx(rend, panz, NULL, &dest,
                    dynamic_cast<const IMovableObject *>(obj)->getHeading(),
@@ -153,8 +155,10 @@ void VideoContextSDL::draw(const IObject *obj) noexcept {
 
   static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
   SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
-  dest.x = static_cast<int>(obj->getPosition().x - cameraPosition.x);
-  dest.y = static_cast<int>(obj->getPosition().y - cameraPosition.y);
+  dest.x =
+      static_cast<int>(obj->getPosition().x - dest.w / 2 - cameraPosition.x);
+  dest.y =
+      static_cast<int>(obj->getPosition().y - dest.h / 2 - cameraPosition.y);
   // SDL_RenderCopy(rend, gun, NULL, &dest);
 
   SDL_RenderCopyEx(rend, gun, NULL, &dest,

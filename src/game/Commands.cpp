@@ -40,39 +40,47 @@ const ICommand *cmd{new CommandBase<CommandIdle>(ICommand::Priority::IDLE)};
 namespace CommandMove {
 class CommandMove final {
   bool f = true;
+  Coord prev{};
 
 public:
   bool execute(IObject &o) {
     static std::mt19937 rng((unsigned int)time(NULL));
-    static std::uniform_int_distribution<int64_t> gen(0, 2);
+    static std::uniform_int_distribution<int64_t> gen(0, 10);
 
     IMovableObject &obj = dynamic_cast<IMovableObject &>(o);
-    if (gen(rng) == 1) {
+
+    prev = obj.getPosition();
+
+    if (gen(rng) % 3 == 0) {
       obj.rotateRiht();
-    }
-    if (gen(rng) == 2) {
+    } else if (gen(rng) % 4 == 0) {
       obj.rotateLeft();
     }
-
     if (!f) {
       obj.moveForward();
 
     } else {
       obj.moveBackward();
     }
-    if (obj.getPosition().x > 30000) {
+    if (obj.getPosition().x > MAX_COORD) {
       f = !f;
-      obj.setPosition(Coord{30000, obj.getPosition().y});
-    } else if (obj.getPosition().x < 0) {
+      obj.setPosition(Coord{MAX_COORD, obj.getPosition().y});
+    } else if (obj.getPosition().x < 0 + 200) {
       f = !f;
-      obj.setPosition(Coord{0, obj.getPosition().y});
-    } else if (obj.getPosition().y > 30000) {
-      obj.setPosition(Coord{obj.getPosition().x, 30000});
+      obj.setPosition(Coord{200, obj.getPosition().y});
+    } else if (obj.getPosition().y > MAX_COORD) {
+      obj.setPosition(Coord{obj.getPosition().x, MAX_COORD});
       f = !f;
-    } else if (obj.getPosition().y < 0) {
-      obj.setPosition(Coord{obj.getPosition().x, 0});
+    } else if (obj.getPosition().y < 0 + 200) {
+      obj.setPosition(Coord{obj.getPosition().x, 200});
       f = !f;
     }
+
+    if (obj.getPosition() == prev) {
+      f = !f;
+      return false;
+    }
+
     return false;
   }
 };

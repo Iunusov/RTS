@@ -1,2 +1,2 @@
-clang-format -i inc/*.hpp inc/interfaces/*.hpp src/*.cpp
+find ./src ./inc -iname *.hpp -o -iname *.cpp | xargs clang-format -i
 

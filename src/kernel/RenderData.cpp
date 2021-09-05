@@ -41,7 +41,7 @@ void GetRenderData(std::vector<IObject *> &data, double &timeDiff) noexcept {
 }
 
 void PushRenderingData(const std::list<IObject *> &data,
-                       const Renderer2D &rend) noexcept {
+                       const IRenderer &rend) noexcept {
   if (dataReady) {
     return;
   }
