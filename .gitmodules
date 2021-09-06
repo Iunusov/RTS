@@ -1,8 +1,8 @@
 [submodule "deps/SDL/SDL"]
 	path = deps/SDL/SDL
 	url = https://github.com/libsdl-org/SDL
-        branch = main
+	branch = main
 [submodule "deps/SDL/SDL_Image"]
 	path = deps/SDL/SDL_Image
-	url = https://github.com/libsdl-org/SDL_Image
-        branch = main
+	url = https://github.com/libsdl-org/SDL_image
+	branch = main

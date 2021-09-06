@@ -1,7 +1,0 @@
-<map id="IMovableObject" name="IMovableObject">
-<area shape="rect" id="node1" title=" " alt="" coords="42,155,166,181"/>
-<area shape="rect" id="node4" href="$classCloneable.html" title=" " alt="" coords="5,229,203,271"/>
-<area shape="rect" id="node2" href="$classObjectBase.html" title=" " alt="" coords="56,80,152,107"/>
-<area shape="rect" id="node3" href="$classIObject.html" title=" " alt="" coords="70,5,138,32"/>
-<area shape="rect" id="node5" href="$classTestObject.html" title=" " alt="" coords="59,319,149,345"/>
-</map>
