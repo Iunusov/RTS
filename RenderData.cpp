@@ -1,27 +1,11 @@
 #include "RenderData.hpp"
 
-#include <atomic>
 #include <chrono>
-#include <cmath>
-#include <mutex>
-#include <vector>
 
 #include "Config.hpp"
-#include "Coord.hpp"
-#include "IMovableObject.hpp"
-#include "Math.hpp"
 
-namespace {
-
-std::vector<IObject *> buffer;
-std::mutex mtx;
-auto start = std::chrono::steady_clock::now();
-std::atomic_bool dataReady{false};
-
-} // namespace
-
-namespace RenderData {
-void GetRenderData(std::vector<IObject *> &data, double &timeDiff) noexcept {
+void RenderData::GetRenderData(std::vector<IObject *> &data,
+                               double &timeDiff) const noexcept {
   for (size_t i(0); i < data.size(); ++i) {
     delete (data[i]);
   }
@@ -40,8 +24,8 @@ void GetRenderData(std::vector<IObject *> &data, double &timeDiff) noexcept {
   dataReady = false;
 }
 
-void PushRenderingData(const std::list<IObject *> &data,
-                       const IRenderer &rend) noexcept {
+void RenderData::PushRenderingData(const std::list<IObject *> &data,
+                                   const IRenderer &renderer) noexcept {
   if (dataReady) {
     return;
   }
@@ -52,13 +36,12 @@ void PushRenderingData(const std::list<IObject *> &data,
   }
   buffer.resize(0);
   for (const auto &obj : data) {
-    if (rend.isVisible(*obj)) {
-      buffer.emplace_back(obj->clone());
+    if (!renderer.isVisible(*obj)) {
+      continue;
     }
+    buffer.emplace_back(obj->clone());
   }
   start = std::chrono::steady_clock::now();
   mtx.unlock();
   dataReady = true;
 }
-
-} // namespace RenderData

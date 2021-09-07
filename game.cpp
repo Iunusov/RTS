@@ -56,20 +56,21 @@ int main(int, char **) {
   VideoContextSDL::GetInstance()->setup();
   IRenderer *renderer = new Renderer2D{VideoContextSDL::GetInstance()};
 
-  Scroller scroller{};
+  RenderData renderFrame{};
+
   GameLoop game;
-  game.Start(Objects, *renderer);
+  game.Start(Objects, renderFrame, *renderer);
 
   while (true) {
-    scroller.execute();
+    static Scroller scroller{};
 
     const auto expectedMS{1000.0 / 60.0};
     const auto start{std::chrono::steady_clock::now()};
 
     double timeDiff{};
-    RenderData::GetRenderData(lastRender, timeDiff);
+    renderFrame.GetRenderData(lastRender, timeDiff);
     renderer->Render(scroller.GetPos(), lastRender, timeDiff);
-    // std::cout << "Rendered objects: " << lastRender.size() << std::endl;
+    scroller.execute();
 
     const auto end{std::chrono::steady_clock::now()};
     const auto elapsedMS{(size_t)(

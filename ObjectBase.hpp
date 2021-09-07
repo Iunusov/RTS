@@ -15,7 +15,7 @@
 #include <iostream>
 
 namespace {
-inline size_t getGlobalId() noexcept {
+size_t getGlobalId() noexcept {
   static size_t id{0};
   return ++id;
 }

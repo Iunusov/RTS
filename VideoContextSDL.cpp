@@ -16,13 +16,6 @@ const std::array<std::string, 5> bestRenderers = {
 std::map<std::string, int> renderPresense;
 } // namespace
 
-static inline int64_t carX(int64_t x, int64_t y, int64_t w) {
-  return (x - y) * (int64_t)(w / 2.0);
-}
-static inline int64_t carY(int64_t x, int64_t y, int64_t h) {
-  return (x + y) * (int64_t)(h / 2.0);
-}
-
 IVideoContext *VideoContextSDL::instance = nullptr;
 
 void VideoContextSDL::Create() noexcept { instance = new VideoContextSDL(); }

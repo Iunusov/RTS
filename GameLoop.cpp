@@ -17,24 +17,25 @@ namespace {
 std::atomic_bool doGameLoop{false};
 }
 
-void GameLoop::Start(std::list<IObject *> &gameObjects, const IRenderer &rend) {
+void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
+                     IRenderer &renderer) {
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects, &rend, this]() {
+  static auto th = std::thread([&gameObjects, &frame, &renderer, this]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
-      for (auto &&o : gameObjects) {
+      for (auto o : gameObjects) {
         Collisions::getInstance()->update(*o);
 
         o->execute();
       }
+      frame.PushRenderingData(gameObjects, renderer);
 
-      RenderData::PushRenderingData(gameObjects, rend);
       const auto end = std::chrono::steady_clock::now();
       const size_t spent =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
-      // std::cout<<"spent: "<<spent<<"ms"<<std::endl;
+
       if (spent >= MODEL_CYCLE_TIME_MS) {
         continue;
       }

@@ -22,16 +22,5 @@ public:
   }
 
   void Render(const Coord &pos, const std::vector<IObject *> &Objects,
-              double timeDiff) noexcept override {
-
-    ctx->clear();
-    ctx->setCamera(pos);
-    ctx->draw(map);
-    for (const auto &obj : Objects) {
-      obj->approx(timeDiff);
-      obj->draw(*ctx);
-    }
-    // std::cout << "objects in frame: " << Objects.size() << std::endl;
-    ctx->present();
-  }
+              const double timeDiff) noexcept override;
 };
