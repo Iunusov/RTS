@@ -63,6 +63,7 @@ int main(int, char **) {
 
   while (true) {
     static Scroller scroller{};
+    scroller.execute();
 
     const auto expectedMS{1000.0 / 60.0};
     const auto start{std::chrono::steady_clock::now()};
@@ -70,7 +71,6 @@ int main(int, char **) {
     double timeDiff{};
     renderFrame.GetRenderData(lastRender, timeDiff);
     renderer->Render(scroller.GetPos(), lastRender, timeDiff);
-    scroller.execute();
 
     const auto end{std::chrono::steady_clock::now()};
     const auto elapsedMS{(size_t)(

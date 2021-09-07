@@ -38,16 +38,16 @@ public:
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
-          coord.y -= 50;
+          coord.y = (coord.y > 100) ? coord.y - 100 : 0;
           break;
         case SDLK_DOWN:
-          coord.y += 50;
+          coord.y += 100;
           break;
         case SDLK_LEFT:
-          coord.x -= 50;
+          coord.x = (coord.x > 100) ? coord.x - 100 : 0;
           break;
         case SDLK_RIGHT:
-          coord.x += 50;
+          coord.x += 100;
           break;
         default:
           break;

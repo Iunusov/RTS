@@ -37,17 +37,14 @@ public:
   void draw(const Map &obj) noexcept override;
   bool isVisible(const IObject &obj) const noexcept override {
     std::lock_guard<std::mutex> lock{mtx};
-    constexpr size_t border = 500;
-    if (obj.getPosition().x > cameraPosition.x + w + border ||
-        obj.getPosition().y > cameraPosition.y + h + border ||
-        obj.getPosition().x < cameraPosition.x - border ||
-        obj.getPosition().y < cameraPosition.y - border) {
-      return false;
-    }
-    return true;
+    constexpr size_t offscreen = 1000;
+    const auto pos{obj.getPosition()};
+    return (pos.x + offscreen > cameraPosition.x) &&
+           (pos.y + offscreen > cameraPosition.y) &&
+           (pos.x < cameraPosition.x + w + offscreen) &&
+           (pos.y < cameraPosition.y + h + offscreen);
   }
-
-  void clear() noexcept override;
+  inline void clear() noexcept override;
   void delay(size_t ms) const noexcept override;
   void present() noexcept override;
   void draw(const IObject *obj) noexcept override;

@@ -62,19 +62,6 @@ public:
     } else {
       obj.moveBackward();
     }
-    if (obj.getPosition().x > MAX_COORD) {
-      f = !f;
-      obj.setPosition(Coord{MAX_COORD, obj.getPosition().y});
-    } else if (obj.getPosition().x < 0 + 200) {
-      f = !f;
-      obj.setPosition(Coord{200, obj.getPosition().y});
-    } else if (obj.getPosition().y > MAX_COORD) {
-      obj.setPosition(Coord{obj.getPosition().x, MAX_COORD});
-      f = !f;
-    } else if (obj.getPosition().y < 0 + 200) {
-      obj.setPosition(Coord{obj.getPosition().x, 200});
-      f = !f;
-    }
 
     if (obj.getPosition() == prev) {
       f = !f;

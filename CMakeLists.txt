@@ -35,7 +35,20 @@ add_subdirectory(deps/SDL/SDL)
 add_subdirectory(deps/SDL/SDL_Image)
 
 # add executable
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}  SUB_SOURCES)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/stuff)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/interfaces)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/custom)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/gfx)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/platform)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/)
+
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/engine  SUB_SOURCES)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/custom  SUB_SOURCES)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/gfx  SUB_SOURCES)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/platform  SUB_SOURCES)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/ SUB_SOURCES)
+
 add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options

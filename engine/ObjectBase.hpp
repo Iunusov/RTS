@@ -36,9 +36,10 @@ private:
 
 public:
   void approx(double timeDiff) noexcept override {
-    setPosition(Coord{(Math::lerp(previousPosition.x, position.x, timeDiff)),
-                      (Math::lerp(previousPosition.y, position.y, timeDiff))});
-    setHeading((double)Math::lerp(previousHeading, heading, timeDiff));
+    setPosition(Coord{Math::lerp(previousPosition.x, position.x, timeDiff),
+                      Math::lerp(previousPosition.y, position.y, timeDiff)});
+
+    setHeading(Math::lerp(previousHeading, heading, timeDiff));
   }
 
   void teleportTo(const Coord &pos) NCNOF {

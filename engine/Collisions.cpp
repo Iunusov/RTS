@@ -30,8 +30,11 @@ void Collisions::update(IObject &obj) noexcept {
   getBucketForObjectID[id] = newBktId;
 }
 
-bool Collisions::checkCollisions(const Coord &pos,
-                                 const size_t id) const noexcept {
+bool Collisions::checkCollisions(const Coord &pos, const size_t id) const
+    noexcept {
+  if (pos.x <= 0 || pos.x >= MAX_COORD || pos.y <= 0 || pos.y >= MAX_COORD) {
+    return true;
+  }
   const auto bkt{getBucketNum(pos)};
   return checkRow(bkt - BUCKET_COLS, pos, id) || checkRow(bkt, pos, id) ||
          checkRow(bkt + BUCKET_COLS, pos, id);
