@@ -11,6 +11,8 @@
 
 #include "Math.hpp"
 
+#include <random>
+
 namespace CommandMove {
 extern const ICommand *cmd;
 }
@@ -18,31 +20,37 @@ extern const ICommand *cmd;
 static std::list<IObject *> Objects;
 static std::vector<IObject *> lastRender;
 
+static std::mt19937 rng((unsigned int)time(NULL));
+static std::uniform_int_distribution<int64_t> gen(0, MAX_COORD);
+
 static void addTestData() {
-  constexpr const auto density{300};
+
   constexpr const auto MAX_COUNT{100000}; // 100 000
 
-  size_t count{0};
-  for (size_t i(1); i < MAX_COORD / density; i++) {
-    if (count == MAX_COUNT) {
-      break;
-    }
-    for (size_t j(1); j < MAX_COORD / density; j++) {
-      if (count == MAX_COUNT) {
-        break;
+  for (size_t i(0); i < MAX_COUNT; i++) {
+    IObject *obj = new TestObject();
+    Coord coord =
+        Coord{(decltype(coord.x))gen(rng), (decltype(coord.y))gen(rng)};
+
+    while (Collisions::getInstance()->checkCollisions(coord, obj->getId())) {
+      static size_t c{};
+      if (++c > 1000) {
+        std::cout << std::endl
+                  << "created " << Objects.size() << " units" << std::endl
+                  << std::endl;
+        return;
       }
-      auto *obj = new TestObject();
-      Coord coord = Coord{1000+(decltype(coord.x))(i * density),
-                          (decltype(coord.y))(j * density)};
-      obj->setHeading((double)(count % 360));
-      obj->teleportTo(coord);
-      Objects.emplace_back(obj);
-      ++count;
+      coord = Coord{(decltype(coord.x))gen(rng), (decltype(coord.y))gen(rng)};
     }
+
+    obj->setHeading((double)(gen(rng) % 360));
+    obj->teleportTo(coord);
+
+    Collisions::getInstance()->update(*obj);
+    Objects.emplace_back(obj);
+    obj->acceptCommand(*CommandMove::cmd);
   }
-  for (auto o : Objects) {
-    o->acceptCommand(*CommandMove::cmd);
-  }
+
   std::cout << std::endl
             << "created " << Objects.size() << " units" << std::endl
             << std::endl;
@@ -62,10 +70,11 @@ int main(int, char **) {
   game.Start(Objects, renderFrame, *renderer);
 
   while (true) {
-    static Scroller scroller{};
+    static Scroller scroller{VideoContextSDL::GetInstance()->getWidth(),
+                             VideoContextSDL::GetInstance()->getHeigt()};
     scroller.execute();
 
-    const auto expectedMS{1000.0 / 60.0};
+    const size_t expectedMS{(size_t)(1000.0 / 60.0)};
     const auto start{std::chrono::steady_clock::now()};
 
     double timeDiff{};
@@ -77,11 +86,9 @@ int main(int, char **) {
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count())};
 
-    if (elapsedMS >= expectedMS) {
-      continue;
+    if (expectedMS > elapsedMS) {
+      renderer->Delay((size_t)(expectedMS - elapsedMS));
     }
-
-    renderer->Delay((size_t)(expectedMS - elapsedMS));
   }
 
   return 0;

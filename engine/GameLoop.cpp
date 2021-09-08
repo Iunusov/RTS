@@ -36,12 +36,10 @@ void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
 
-      if (spent >= MODEL_CYCLE_TIME_MS) {
-        continue;
+      if (spent < MODEL_CYCLE_TIME_MS) {
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(MODEL_CYCLE_TIME_MS - spent));
       }
-      static_assert(MODEL_CYCLE_TIME_MS >= 1, "");
-      std::this_thread::sleep_for(
-          std::chrono::milliseconds(MODEL_CYCLE_TIME_MS - spent));
     }
   });
   th.detach();

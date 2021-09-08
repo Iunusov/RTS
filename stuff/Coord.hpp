@@ -4,12 +4,12 @@
 #include "Math.hpp"
 
 struct Coord final {
-  using T = long double;
+  using T = double;
   T x{0};
   T y{0};
   T z{0};
 
-  Coord(T x, T y, T z = 0) noexcept : x(x), y(y), z(z) {}
+  Coord(T x_, T y_, T z_ = 0) noexcept : x(x_), y(y_), z(z_) {}
   Coord() noexcept = default;
   Coord(const Coord &) noexcept = default;
   Coord(Coord &&) noexcept = default;

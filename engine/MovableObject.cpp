@@ -20,7 +20,7 @@ void IMovableObject::moveBackward() noexcept { move(false); }
 void IMovableObject::rotateLeft() noexcept {
   setHeading(getHeading() -
              (double)360.0 / 10 / (double)MODEL_EXECUTE_PER_SECOND);
-};
+}
 void IMovableObject::rotateRiht() noexcept {
   setHeading(getHeading() +
              (double)360.0 / 10 / (double)MODEL_EXECUTE_PER_SECOND);

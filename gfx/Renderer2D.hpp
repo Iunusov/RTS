@@ -14,7 +14,7 @@ private:
   Map map;
 
 public:
-  Renderer2D(IVideoContext *ctx) noexcept : ctx{ctx} {}
+  Renderer2D(IVideoContext *ctx_) noexcept : ctx{ctx_} {}
   void Delay(size_t ms) noexcept override { ctx->delay(ms); }
 
   bool isVisible(const IObject &obj) const noexcept override {

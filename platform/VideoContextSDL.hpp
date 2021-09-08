@@ -29,7 +29,7 @@ public:
   }
 
   int getWidth() const noexcept override { return w; }
-  int getHeigt() const noexcept override { return w; }
+  int getHeigt() const noexcept override { return h; }
   Coord getCameraPos() const noexcept {
     std::lock_guard<std::mutex> lock{mtx};
     return cameraPosition;

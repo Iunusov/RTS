@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Renderer2D.hpp"
 
 void Renderer2D::Render(const Coord &pos, const std::vector<IObject *> &Objects,

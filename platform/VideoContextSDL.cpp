@@ -46,7 +46,8 @@ void VideoContextSDL::setup() noexcept {
   }
 
   SDL_Log("Current Driver:");
-  SDL_Log(SDL_GetCurrentVideoDriver());
+  std::string driver{SDL_GetCurrentVideoDriver()};
+  SDL_Log("%s", driver.c_str());
   SDL_Log("\n");
 
   SDL_DisplayMode DM;
@@ -109,7 +110,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_RendererInfo info{};
   SDL_GetRendererInfo(rend, &info);
   SDL_Log("Renderer:");
-  SDL_Log(info.name);
+  SDL_Log("%s", info.name);
   SDL_Log("\n");
   SDL_Log("Done.");
   SDL_Log("--------------------------------");
@@ -124,10 +125,10 @@ void VideoContextSDL::draw(const Map &) noexcept {
   SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
-  for (int64_t i(0); i < 80; i++) {
-    for (int64_t j(0); j < 50; j++) {
-      dest.x = (int)(dest.w * i - cameraPosition.x);
-      dest.y = (int)(dest.h * j - cameraPosition.y);
+  for (int i(0); i < 80; i++) {
+    for (int j(0); j < 50; j++) {
+      dest.x = (int)(dest.w * i - (int)cameraPosition.x);
+      dest.y = (int)(dest.h * j - (int)cameraPosition.y);
       SDL_RenderCopy(rend, tex, NULL, &dest);
     }
   }

@@ -4,15 +4,21 @@
 
 #include <mutex>
 
+#include "Config.hpp"
 #include "Coord.hpp"
 #include "IObject.hpp"
+
+#include <iostream>
 
 class Scroller final {
 private:
   Coord coord{};
   mutable std::mutex mtx;
+  int w{};
+  int h{};
 
 public:
+  Scroller(int w_, int h_) : w{w_}, h{h_} {}
   Coord GetPos() const noexcept {
     const std::lock_guard<std::mutex> lock(mtx);
     return coord;
@@ -41,13 +47,15 @@ public:
           coord.y = (coord.y > 100) ? coord.y - 100 : 0;
           break;
         case SDLK_DOWN:
-          coord.y += 100;
+          coord.y = ((coord.y + 100 <= MAX_COORD - h) ? (coord.y + 100)
+                                                      : (MAX_COORD - h));
           break;
         case SDLK_LEFT:
           coord.x = (coord.x > 100) ? coord.x - 100 : 0;
           break;
         case SDLK_RIGHT:
-          coord.x += 100;
+          coord.x = ((coord.x + 100 <= MAX_COORD - w) ? (coord.x + 100)
+                                                      : (MAX_COORD - w));
           break;
         default:
           break;

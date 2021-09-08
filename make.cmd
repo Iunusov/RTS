@@ -4,7 +4,7 @@ mkdir build_dir
 cd build_dir
 
 cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . -j9  --config Release
+cmake --build . -j10  --config Release
 
 cd ..
 

@@ -2,15 +2,14 @@
 #include <cmath>
 
 namespace Math {
-constexpr long double PI_Constant{3.14159265358979323846};
+constexpr double PI_Constant{3.14159265358979323846};
 
 template <class T>
-constexpr T lerp(const T a, const T b, const long double t) noexcept {
+constexpr T lerp(const T a, const T b, const double t) noexcept {
   return (T)(a + t * (b - a));
 }
 
-template <class T>
-constexpr T P2(const T a, const T b) noexcept {
+template <class T> constexpr T P2(const T a, const T b) noexcept {
   const decltype(a) tmp{(a > b) ? a - b : b - a};
   return (tmp * tmp);
 }
@@ -21,9 +20,11 @@ constexpr decltype(auto) dist(const T &a, const T &b) noexcept {
 }
 
 template <class T, class D>
-constexpr T move(const D len, const long double heading) noexcept {
+constexpr T move(const D len, const double heading) noexcept {
+  constexpr T t;
   constexpr const auto rad{PI_Constant / 180.0};
-  return T{len * cos(heading * rad), len * sin(heading * rad)};
+  return T{(decltype(t.x))len * cos(heading * rad),
+           (decltype(t.x))len * sin(heading * rad)};
 }
 
 } // namespace Math

@@ -5,8 +5,9 @@
 
 namespace {
 constexpr size_t THRESHOLD{250};
-constexpr size_t ONE_BUCKET_RESOLUTION{222};
+
 constexpr size_t BUCKET_COLS{(MAX_COORD / ONE_BUCKET_RESOLUTION) + 1};
+static_assert(BUCKET_COLS * ONE_BUCKET_RESOLUTION >= MAX_COORD, "");
 constexpr size_t NUM_BUCKETS{BUCKET_COLS * BUCKET_COLS};
 
 inline size_t getBucketNum(const Coord &tgt) noexcept {
@@ -27,46 +28,45 @@ void Collisions::update(IObject &obj) noexcept {
   const auto id{obj.getId()};
   const auto bktIter{getBucketForObjectID.find(id)};
   if (bktIter != getBucketForObjectID.end())
-    [[likely]] {
+    LIKELY {
       if (bktIter->second == newBktId)
-        [[likely]] { return; }
+        LIKELY { return; }
       else
-        [[unlikely]] { buckets.at(bktIter->second).erase(&obj); }
+        UNLIKELY { buckets.at(bktIter->second).erase(&obj); }
     }
   buckets.at(newBktId).insert(&obj);
   getBucketForObjectID[id] = newBktId;
 }
 
 #define checkRow(idx, pos, id)                                                 \
-  (bool{                                                                       \
-    (collision((idx - 1), pos, id) || collision((idx), pos, id) ||             \
-     collision((idx + 1), pos, id))                                            \
-  })
+  (bool{(collision((idx - 1), pos, id) || collision((idx), pos, id) ||         \
+         collision((idx + 1), pos, id))})
+
 bool Collisions::checkCollisions(const Coord &pos, const size_t id) const
     noexcept {
   if (pos.x > 0 && pos.x < MAX_COORD && pos.y > 0 && pos.y < MAX_COORD)
-    [[likely]] {
+    LIKELY {
       const auto bkt{getBucketNum(pos)};
       return checkRow(bkt - BUCKET_COLS, pos, id) || checkRow(bkt, pos, id) ||
              checkRow(bkt + BUCKET_COLS, pos, id);
     }
   else
-    [[unlikely]] { return true; }
+    UNLIKELY { return true; }
 }
 
 bool Collisions::collision(const int64_t num, const Coord &coord,
                            const size_t id) const noexcept {
-  if ((num >= 0) && (num < NUM_BUCKETS))
-    [[likely]] {
+  if ((num >= 0) && ((size_t)num < NUM_BUCKETS))
+    LIKELY {
       const auto &bkt = buckets.at(num);
       for (const auto &l : bkt) {
-        [[likely]] if ((id != l->getId()) &&
-                       (coord.distance(l->getPosition()) < THRESHOLD)) {
+        LIKELY if ((id != l->getId()) &&
+                   (coord.distance(l->getPosition()) < THRESHOLD)) {
           return true;
         }
       }
       return false;
     }
   else
-    [[unlikely]] { return false; }
+    UNLIKELY { return false; }
 }
