@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "CppHacks.hpp"
 #include "IObject.hpp"
 
 struct Coord;
@@ -20,9 +21,6 @@ public:
   bool checkCollisions(const Coord &pos, const size_t id) const noexcept;
 
 private:
-  inline size_t getBucketNum(const Coord &tgt) const noexcept;
-  inline bool checkRow(const int64_t idx, const Coord &pos,
-                       const size_t id) const noexcept;
-  inline bool collision(const int64_t num, const Coord &coord,
+  INLINE bool collision(const int64_t num, const Coord &coord,
                         const size_t id) const noexcept;
 };

@@ -19,8 +19,8 @@ static std::list<IObject *> Objects;
 static std::vector<IObject *> lastRender;
 
 static void addTestData() {
-  constexpr const auto density{400};
-  constexpr const auto MAX_COUNT{50000}; // 50 000
+  constexpr const auto density{300};
+  constexpr const auto MAX_COUNT{100000}; // 100 000
 
   size_t count{0};
   for (size_t i(1); i < MAX_COORD / density; i++) {
@@ -32,7 +32,7 @@ static void addTestData() {
         break;
       }
       auto *obj = new TestObject();
-      Coord coord = Coord{(decltype(coord.x))(i * density),
+      Coord coord = Coord{1000+(decltype(coord.x))(i * density),
                           (decltype(coord.y))(j * density)};
       obj->setHeading((double)(count % 360));
       obj->teleportTo(coord);
