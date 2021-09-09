@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project("RTS" CXX)
 
 # set standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -11,7 +11,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(MSVC)
   add_compile_options(/DNDEBUG)
 else()
-  add_compile_options(-O3 -fomit-frame-pointer -pipe)
+  add_compile_options(-O2 -fomit-frame-pointer -fno-exceptions -pipe)
 endif()
 
 # set pthreads

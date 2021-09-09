@@ -21,20 +21,27 @@ Collisions *Collisions::getInstance() noexcept {
   return &instance;
 }
 
-Collisions::Collisions() noexcept { buckets.resize(NUM_BUCKETS); }
+Collisions::Collisions() noexcept {
+  buckets = new std::set<IObject *>[NUM_BUCKETS];
+  for (size_t i(0); i < MAX_COUNT; ++i) {
+    getBucketForObjectID[i] = -1;
+  }
+}
 
 void Collisions::update(IObject &obj) noexcept {
   const auto newBktId{getBucketNum(obj.getPosition())};
   const auto id{obj.getId()};
-  const auto bktIter{getBucketForObjectID.find(id)};
-  if (bktIter != getBucketForObjectID.end())
+
+  const auto bktId = getBucketForObjectID[(id)];
+
+  if (bktId != -1)
     LIKELY {
-      if (bktIter->second == newBktId)
+      if ((size_t)bktId == newBktId)
         LIKELY { return; }
       else
-        UNLIKELY { buckets.at(bktIter->second).erase(&obj); }
+        UNLIKELY { buckets[bktId].erase(&obj); }
     }
-  buckets.at(newBktId).insert(&obj);
+  buckets[newBktId].emplace(&obj);
   getBucketForObjectID[id] = newBktId;
 }
 
@@ -42,8 +49,8 @@ void Collisions::update(IObject &obj) noexcept {
   (bool{(collision((idx - 1), pos, id) || collision((idx), pos, id) ||         \
          collision((idx + 1), pos, id))})
 
-bool Collisions::checkCollisions(const Coord &pos, const size_t id) const
-    noexcept {
+bool Collisions::checkCollisions(const Coord &pos,
+                                 const size_t id) const noexcept {
   if (pos.x > 0 && pos.x < MAX_COORD && pos.y > 0 && pos.y < MAX_COORD)
     LIKELY {
       const auto bkt{getBucketNum(pos)};
@@ -58,7 +65,7 @@ bool Collisions::collision(const int64_t num, const Coord &coord,
                            const size_t id) const noexcept {
   if ((num >= 0) && ((size_t)num < NUM_BUCKETS))
     LIKELY {
-      const auto &bkt = buckets.at(num);
+      const auto &bkt = buckets[num];
       for (const auto &l : bkt) {
         LIKELY if ((id != l->getId()) &&
                    (coord.distance(l->getPosition()) < THRESHOLD)) {

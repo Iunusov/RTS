@@ -24,9 +24,6 @@ static std::mt19937 rng((unsigned int)time(NULL));
 static std::uniform_int_distribution<int64_t> gen(0, MAX_COORD);
 
 static void addTestData() {
-
-  constexpr const auto MAX_COUNT{100000}; // 100 000
-
   for (size_t i(0); i < MAX_COUNT; i++) {
     IObject *obj = new TestObject();
     Coord coord =

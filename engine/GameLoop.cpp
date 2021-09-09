@@ -36,6 +36,16 @@ void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
 
+      {
+        size_t cpuLoad =
+            (size_t)(100.0 * (double)(spent) / (double(MODEL_CYCLE_TIME_MS)));
+        static size_t counter{};
+        if ((++counter % 20) == 0) {
+          counter = 0;
+          std::cout << "cpuLoad: " << cpuLoad << " %" << std::endl;
+        }
+      }
+
       if (spent < MODEL_CYCLE_TIME_MS) {
         std::this_thread::sleep_for(
             std::chrono::milliseconds(MODEL_CYCLE_TIME_MS - spent));
