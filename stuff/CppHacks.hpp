@@ -8,9 +8,3 @@
 #else
 #define INLINE inline __attribute__((always_inline))
 #endif
-
-//#define LIKELY [[likely]]
-//#define UNLIKELY [[unlikely]]
-
-#define LIKELY
-#define UNLIKELY

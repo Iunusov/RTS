@@ -20,7 +20,7 @@ std::atomic_bool doGameLoop{false};
 void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
                      IRenderer &renderer) {
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects, &frame, &renderer, this]() {
+  static auto th = std::thread([&gameObjects, &frame, &renderer]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
@@ -33,7 +33,8 @@ void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
 
       const auto end = std::chrono::steady_clock::now();
       const size_t spent =
-          std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+          (size_t)std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                        start)
               .count();
 
       {

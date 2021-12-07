@@ -13,14 +13,14 @@ struct Coord;
 
 class Collisions final {
 private:
-  std::set<IObject *> *buckets = nullptr;
-  ssize_t getBucketForObjectID[MAX_COUNT] = {};
+  std::set<const IObject *> *buckets = nullptr;
+  size_t getBucketForObjectID[MAX_COUNT] = {};
   Collisions() noexcept;
 
 public:
   static Collisions *getInstance() noexcept;
   ~Collisions() noexcept { delete[] buckets; }
-  void update(IObject &obj) noexcept;
+  void update(const IObject &obj) noexcept;
   bool checkCollisions(const Coord &pos, const size_t id) const noexcept;
 
 private:

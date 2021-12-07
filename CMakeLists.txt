@@ -82,11 +82,6 @@ else()
             -Werror=format-security
             -D_FORTIFY_SOURCE=2
             -D_GLIBCXX_ASSERTIONS
-            -Wl,-z,defs
-            -Wl,-z,now
-            -Wl,-z,relro
-            -Wl,-pie
-            -flto
             -fpie)
 endif()
 

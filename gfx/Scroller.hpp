@@ -39,7 +39,6 @@ public:
         exit(1);
       }
 
-      Coord tmp(coord);
       const std::lock_guard<std::mutex> lock(mtx);
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {

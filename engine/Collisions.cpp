@@ -22,58 +22,57 @@ Collisions *Collisions::getInstance() noexcept {
 }
 
 Collisions::Collisions() noexcept {
-  buckets = new std::set<IObject *>[NUM_BUCKETS];
+  buckets = new std::set<const IObject *>[NUM_BUCKETS];
   for (size_t i(0); i < MAX_COUNT; ++i) {
-    getBucketForObjectID[i] = -1;
+    getBucketForObjectID[i] = SIZE_MAX;
   }
 }
 
-void Collisions::update(IObject &obj) noexcept {
+void Collisions::update(const IObject &obj) noexcept {
   const auto newBktId{getBucketNum(obj.getPosition())};
   const auto id{obj.getId()};
 
   const auto bktId = getBucketForObjectID[(id)];
 
-  if (bktId != -1)
-    LIKELY {
-      if ((size_t)bktId == newBktId)
-        LIKELY { return; }
-      else
-        UNLIKELY { buckets[bktId].erase(&obj); }
+  if (bktId != SIZE_MAX) {
+    if (bktId == newBktId) {
+      return;
+    } else {
+      buckets[bktId].erase(&obj);
     }
+  }
   buckets[newBktId].emplace(&obj);
   getBucketForObjectID[id] = newBktId;
 }
 
-#define checkRow(idx, pos, id)                                                 \
-  (bool{(collision((idx - 1), pos, id) || collision((idx), pos, id) ||         \
-         collision((idx + 1), pos, id))})
-
 bool Collisions::checkCollisions(const Coord &pos,
                                  const size_t id) const noexcept {
-  if (pos.x > 0 && pos.x < MAX_COORD && pos.y > 0 && pos.y < MAX_COORD)
-    LIKELY {
-      const auto bkt{getBucketNum(pos)};
-      return checkRow(bkt - BUCKET_COLS, pos, id) || checkRow(bkt, pos, id) ||
-             checkRow(bkt + BUCKET_COLS, pos, id);
-    }
-  else
-    UNLIKELY { return true; }
+  if (pos.x < 0 || pos.x >= MAX_COORD || pos.y < 0 || pos.y >= MAX_COORD ||
+      getBucketNum(pos) > NUM_BUCKETS) {
+    return true;
+  }
+
+  const auto bkt{getBucketNum(pos)};
+#define checkRow(idx, pos, id)                                                 \
+  (bool{(collision(int64_t(idx - 1), pos, id) ||                               \
+         collision(int64_t(idx), pos, id) ||                                   \
+         collision(int64_t(idx + 1), pos, id))})
+
+  return checkRow(bkt - BUCKET_COLS, pos, id) || checkRow(bkt, pos, id) ||
+         checkRow(bkt + BUCKET_COLS, pos, id);
 }
 
 bool Collisions::collision(const int64_t num, const Coord &coord,
                            const size_t id) const noexcept {
-  if ((num >= 0) && ((size_t)num < NUM_BUCKETS))
-    LIKELY {
-      const auto &bkt = buckets[num];
-      for (const auto &l : bkt) {
-        LIKELY if ((id != l->getId()) &&
-                   (coord.distance(l->getPosition()) < THRESHOLD)) {
-          return true;
-        }
-      }
-      return false;
+  if (num < 0 || (size_t)num >= NUM_BUCKETS) {
+    return false;
+  }
+
+  const auto &bkt = buckets[num];
+  for (const auto &l : bkt) {
+    if ((id != l->getId()) && (coord.distance(l->getPosition()) < THRESHOLD)) {
+      return true;
     }
-  else
-    UNLIKELY { return false; }
+  }
+  return false;
 }

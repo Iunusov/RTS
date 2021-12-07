@@ -6,8 +6,6 @@
 
 class IMovableObject : public ObjectBase {
 private:
-  double prev_fire_angle{fire_angle};
-
   constexpr int64_t getDiff() noexcept {
     static_assert(400 % MODEL_EXECUTE_PER_SECOND == 0,
                   "only integer diff allowed");
@@ -26,6 +24,10 @@ private:
 public:
   double fire_angle{0};
 
+private:
+  double prev_fire_angle{fire_angle};
+
+public:
   void approx(double timeDiff) NCNOF;
 
   void execute() NCNOF;
