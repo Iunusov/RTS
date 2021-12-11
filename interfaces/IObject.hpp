@@ -6,6 +6,8 @@
 class ICommand;
 struct Coord;
 class IVideoContext;
+class IMovableObject;
+class IStaticObject;
 
 class IObject {
 public:
@@ -23,4 +25,5 @@ public:
   virtual void draw(IVideoContext &) noexcept = 0;
   virtual bool isVisible(const IVideoContext &) const noexcept = 0;
   virtual IObject *clone() const noexcept = 0;
+  virtual bool collide(const IMovableObject &) const noexcept = 0;
 };

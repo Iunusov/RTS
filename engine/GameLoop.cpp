@@ -25,8 +25,6 @@ void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
       for (auto o : gameObjects) {
-        Collisions::getInstance()->update(*o);
-
         o->execute();
       }
       frame.PushRenderingData(gameObjects, renderer);

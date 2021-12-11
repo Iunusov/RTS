@@ -9,11 +9,18 @@
 #include <map>
 
 #include "IMovableObject.hpp"
+#include "IStaticObject.hpp"
 
 namespace {
 const std::array<std::string, 5> bestRenderers = {
     "direct3d11", "vulkan", "direct3d", "opengl", "opengles2"};
 std::map<std::string, int> renderPresense;
+
+constexpr int zoomCameraPosition(double pos, int resolution, double camPos,
+                                 int screen_resolution, double scale) {
+  return static_cast<int>(pos - resolution / 2 - camPos +
+                          (int)(screen_resolution / 2.0) / scale);
+}
 } // namespace
 
 IVideoContext *VideoContextSDL::instance = nullptr;
@@ -126,22 +133,37 @@ void VideoContextSDL::draw(const Map &) noexcept {
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
   for (int i(0); i < 80; i++) {
-    for (int j(0); j < 50; j++) {
-      dest.x = (int)(dest.w * i - (int)cameraPosition.x);
-      dest.y = (int)(dest.h * j - (int)cameraPosition.y);
+    for (int j(0); j < 100; j++) {
+      dest.x = (int)(dest.w * i - (int)cameraPosition.x +
+                     (int)(w / 2.0) / double{m_scale});
+      dest.y = (int)(dest.h * j - (int)cameraPosition.y +
+                     (int)(h / 2.0) / double{m_scale});
       SDL_RenderCopy(rend, tex, NULL, &dest);
     }
   }
 }
 
-void VideoContextSDL::draw(const IObject *obj) noexcept {
+void VideoContextSDL::draw(const IStaticObject *obj) noexcept {
+  static auto tex = IMG_LoadTexture(rend, "assets/base.png");
+  SDL_Rect dest;
+  SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
+                              m_scale);
+
+  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
+                              m_scale);
+
+  SDL_RenderCopyEx(rend, tex, NULL, &dest, 0, nullptr, SDL_FLIP_NONE);
+}
+
+void VideoContextSDL::draw(const IMovableObject *obj) noexcept {
   static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
   SDL_Rect dest;
   SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
-  dest.x =
-      static_cast<int>(obj->getPosition().x - dest.w / 2 - cameraPosition.x);
-  dest.y =
-      static_cast<int>(obj->getPosition().y - dest.h / 2 - cameraPosition.y);
+  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
+                              m_scale);
+  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
+                              m_scale);
 
   SDL_RenderCopyEx(rend, panz, NULL, &dest,
                    dynamic_cast<const IMovableObject *>(obj)->getHeading(),
@@ -149,10 +171,10 @@ void VideoContextSDL::draw(const IObject *obj) noexcept {
 
   static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
   SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
-  dest.x =
-      static_cast<int>(obj->getPosition().x - dest.w / 2 - cameraPosition.x);
-  dest.y =
-      static_cast<int>(obj->getPosition().y - dest.h / 2 - cameraPosition.y);
+  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
+                              m_scale);
+  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
+                              m_scale);
   // SDL_RenderCopy(rend, gun, NULL, &dest);
 
   SDL_RenderCopyEx(rend, gun, NULL, &dest,

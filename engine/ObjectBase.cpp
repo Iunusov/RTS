@@ -1,4 +1,5 @@
 #include "ObjectBase.hpp"
+#include "IVideoContext.hpp"
 
 void ObjectBase::acceptCommand(const ICommand &command) noexcept {
   if (command.getPriority() == ICommand::Priority::ONE_CYCLE) {
@@ -17,4 +18,8 @@ void ObjectBase::execute() noexcept {
   previousPosition = position;
   previousHeading = heading;
   cmds.execute(*this);
+}
+
+bool ObjectBase::isVisible(const IVideoContext &ctx) const noexcept {
+  return ctx.isVisible(*this);
 }

@@ -6,10 +6,13 @@
 
 #include "CppHacks.hpp"
 #include "IObject.hpp"
+class IMovableObject;
 
 #include "Config.hpp"
+#include <tuple>
 
 struct Coord;
+class IStaticObject;
 
 class Collisions final {
 private:
@@ -20,10 +23,11 @@ private:
 public:
   static Collisions *getInstance() noexcept;
   ~Collisions() noexcept { delete[] buckets; }
-  void update(const IObject &obj) noexcept;
-  bool checkCollisions(const Coord &pos, const size_t id) const noexcept;
+  void update(const IMovableObject &obj) noexcept;
+  void update_static(const IStaticObject &obj) noexcept;
+  bool checkCollisions(const IMovableObject &obj) const noexcept;
 
 private:
-  INLINE bool collision(const int64_t num, const Coord &coord,
-                        const size_t id) const noexcept;
+  INLINE bool collision(const int64_t num,
+                        const IMovableObject &obj) const noexcept;
 };

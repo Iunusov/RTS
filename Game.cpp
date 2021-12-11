@@ -7,6 +7,7 @@
 #include "Renderer2D.hpp"
 #include "Scroller.hpp"
 #include "TestObject.hpp"
+#include "TestStaticObject.hpp"
 #include "VideoContextSDL.hpp"
 
 #include "Math.hpp"
@@ -24,26 +25,46 @@ static std::mt19937 rng((unsigned int)time(NULL));
 static std::uniform_int_distribution<int64_t> gen(0, MAX_COORD);
 
 static void addTestData() {
+
+  for (int i(0); i < 1000; ++i) {
+    TestStaticObject *staticobject = new TestStaticObject{};
+    staticobject->setPosition(
+        Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
+    staticobject->teleportTo(staticobject->getPosition());
+
+    if (staticobject->getPosition().x < 500 ||
+        staticobject->getPosition().y < 500)
+      continue;
+    if (staticobject->getPosition().x >= MAX_COORD - 500 ||
+        staticobject->getPosition().y >= MAX_COORD - 500)
+      continue;
+
+    Collisions::getInstance()->update_static(*staticobject);
+    Objects.emplace_back(staticobject);
+  }
+
   for (size_t i(0); i < MAX_COUNT; i++) {
     IObject *obj = new TestObject();
-    Coord coord =
-        Coord{(decltype(coord.x))gen(rng), (decltype(coord.y))gen(rng)};
+    obj->setPosition(
+        Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
 
-    while (Collisions::getInstance()->checkCollisions(coord, obj->getId())) {
+    while (
+        Collisions::getInstance()->checkCollisions(*((IMovableObject *)obj))) {
       static size_t c{};
-      if (++c > 1000) {
+      if (++c > 10000) {
         std::cout << std::endl
                   << "created " << Objects.size() << " units" << std::endl
                   << std::endl;
         return;
       }
-      coord = Coord{(decltype(coord.x))gen(rng), (decltype(coord.y))gen(rng)};
+      obj->setPosition(
+          Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
     }
 
     obj->setHeading((double)(gen(rng) % 360));
-    obj->teleportTo(coord);
+    obj->teleportTo(obj->getPosition());
 
-    Collisions::getInstance()->update(*obj);
+    Collisions::getInstance()->update(*(IMovableObject *)obj);
     Objects.emplace_back(obj);
     obj->acceptCommand(*CommandMove::cmd);
   }
@@ -76,7 +97,8 @@ int main(int, char **) {
 
     double timeDiff{};
     renderFrame.GetRenderData(lastRender, timeDiff);
-    renderer->Render(scroller.GetPos(), lastRender, timeDiff);
+    renderer->Render(scroller.GetPos(), scroller.getScale(), lastRender,
+                     timeDiff);
 
     const auto end{std::chrono::steady_clock::now()};
     const auto elapsedMS{(size_t)(

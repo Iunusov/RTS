@@ -7,7 +7,6 @@
 #include "CppHacks.hpp"
 #include "ICommand.hpp"
 #include "IObject.hpp"
-#include "IVideoContext.hpp"
 #include "Math.hpp"
 
 #include "CommandQueue.hpp"
@@ -57,6 +56,5 @@ public:
   void execute() noexcept override;
   void acceptCommand(const ICommand &command) NCNOF;
 
-  void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
-  bool isVisible(const IVideoContext &ctx) CNOF { return ctx.isVisible(*this); }
+  bool isVisible(const IVideoContext &ctx) CNOF;
 };

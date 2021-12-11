@@ -21,6 +21,6 @@ public:
     return obj.isVisible(*ctx);
   }
 
-  void Render(const Coord &pos, const std::vector<IObject *> &Objects,
+  void Render(const Coord &pos, float, const std::vector<IObject *> &Objects,
               const double timeDiff) noexcept override;
 };
