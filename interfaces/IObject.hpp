@@ -23,7 +23,6 @@ public:
   virtual void teleportTo(const Coord &pos) noexcept = 0;
   virtual void approx(double timeDIff) noexcept = 0;
   virtual void draw(IVideoContext &) noexcept = 0;
-  virtual bool isVisible(const IVideoContext &) const noexcept = 0;
   virtual IObject *clone() const noexcept = 0;
   virtual bool collide(const IMovableObject &) const noexcept = 0;
 };

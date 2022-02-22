@@ -18,7 +18,7 @@ public:
   void Delay(size_t ms) noexcept override { ctx->delay(ms); }
 
   bool isVisible(const IObject &obj) const noexcept override {
-    return obj.isVisible(*ctx);
+    return ctx->isVisible(obj.getPosition());
   }
 
   void Render(const Coord &pos, float, const std::vector<IObject *> &Objects,

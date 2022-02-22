@@ -17,7 +17,7 @@ extern const ICommand *cmd;
 void addTestData(std::list<IObject *> &Objects) {
   std::cout << "creating test map, please wait..." << std::endl;
 
-  for (int i(0); i < 3000; ++i) {
+  for (int i(0); i < 10000; ++i) {
     TestStaticObject *staticobject = new TestStaticObject{};
     staticobject->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
@@ -34,12 +34,20 @@ void addTestData(std::list<IObject *> &Objects) {
     Objects.emplace_back(staticobject);
   }
 
-  for (size_t i(0); i < 20000; i++) {
+  for (size_t i(0); i < 50000; i++) {
     IObject *obj = new TestObject();
     obj->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
 
+    // for (auto &o : Objects) {
+    // if (o->getPosition().distance(obj->getPosition()) < 200) {
+
+    // break;
+    //}
+    //  }
+
     while (
+
         Collisions::getInstance()->checkCollisions(*((IMovableObject *)obj))) {
       static size_t c{};
       if (++c > 10000) {
@@ -50,18 +58,6 @@ void addTestData(std::list<IObject *> &Objects) {
       }
       obj->setPosition(
           Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
-    }
-
-    bool skip_object{false};
-
-    for (auto &o : Objects) {
-      if (o->getPosition().distance(obj->getPosition()) < 500) {
-        skip_object = true;
-      }
-    }
-
-    if (skip_object) {
-      continue;
     }
 
     obj->setHeading((double)(gen(rng) % 360));

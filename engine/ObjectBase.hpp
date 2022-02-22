@@ -55,6 +55,4 @@ public:
 
   void execute() noexcept override;
   void acceptCommand(const ICommand &command) NCNOF;
-
-  bool isVisible(const IVideoContext &ctx) CNOF;
 };

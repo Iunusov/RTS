@@ -19,7 +19,3 @@ void ObjectBase::execute() noexcept {
   previousHeading = heading;
   cmds.execute(*this);
 }
-
-bool ObjectBase::isVisible(const IVideoContext &ctx) const noexcept {
-  return ctx.isVisible(*this);
-}

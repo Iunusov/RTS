@@ -8,11 +8,12 @@
 #include "Coord.hpp"
 #include "IObject.hpp"
 
+#include <cmath>
 #include <iostream>
 
 class Scroller final {
 private:
-  double scale{1};
+  double scale{0.8};
   mutable std::mutex mtx;
   const int w{};
   const int h{};
@@ -32,7 +33,7 @@ public:
 
   float getScale() const noexcept {
     const std::lock_guard<std::mutex> lock(mtx);
-    return (float)scale;
+    return (float)pow(scale, 3);
   }
 
   void execute() noexcept {
@@ -50,16 +51,16 @@ public:
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
-          coord.y -= (int)(100.0 / scale);
+          coord.y -= (int)(50.0f / getScale());
           break;
         case SDLK_DOWN:
-          coord.y += (int)(100.0 / scale);
+          coord.y += (int)(50.0f / getScale());
           break;
         case SDLK_LEFT:
-          coord.x -= (int)(100.0 / scale);
+          coord.x -= (int)(50.0f / getScale());
           break;
         case SDLK_RIGHT:
-          coord.x += (int)(100.0 / scale);
+          coord.x += (int)(50.0f / getScale());
           break;
         default:
           break;

@@ -36,7 +36,16 @@ public:
   int getHeigt() const noexcept override { return h; }
 
   void draw(const Map &obj) noexcept override;
-  bool isVisible(const IObject &) const noexcept override { return true; }
+  bool isVisible(const Coord &obj) const noexcept override {
+
+    const auto posx = obj.x;
+    const auto posy = obj.y;
+
+    return (posx >= cameraPosition.x - w / 2.0 / (double)m_scale - 1000) &&
+           (posx <= cameraPosition.x + w / 2.0 / (double)m_scale + 1000) &&
+           (posy >= cameraPosition.y - h / 2.0 / (double)m_scale - 1000) &&
+           (posy <= cameraPosition.y + h / 2.0 / (double)m_scale + 1000);
+  }
   inline void clear() noexcept override;
   void delay(size_t ms) const noexcept override;
   void present() noexcept override;
