@@ -132,8 +132,8 @@ void VideoContextSDL::draw(const Map &) noexcept {
   SDL_Rect dest;
   SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
 
-  for (int i(0); i < 80; i++) {
-    for (int j(0); j < 100; j++) {
+  for (int i(0); i * dest.w < MAX_COORD; i++) {
+    for (int j(0); j * dest.h < MAX_COORD; j++) {
       dest.x = (int)(dest.w * i - (int)cameraPosition.x +
                      (int)(w / 2.0) / double{m_scale});
       dest.y = (int)(dest.h * j - (int)cameraPosition.y +

@@ -12,11 +12,11 @@
 
 class Scroller final {
 private:
-  float scale{1};
+  double scale{1};
   mutable std::mutex mtx;
   const int w{};
   const int h{};
-  Coord coord{w / 2.0, h / 2.0};
+  Coord coord{MAX_COORD / 2.0, MAX_COORD / 2.0};
 
 public:
   Scroller(int w_, int h_) : w{w_}, h{h_} {}
@@ -32,7 +32,7 @@ public:
 
   float getScale() const noexcept {
     const std::lock_guard<std::mutex> lock(mtx);
-    return scale;
+    return (float)scale;
   }
 
   void execute() noexcept {
@@ -50,16 +50,16 @@ public:
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
-          coord.y -= 100;
+          coord.y -= (int)(100.0 / scale);
           break;
         case SDLK_DOWN:
-          coord.y += 100;
+          coord.y += (int)(100.0 / scale);
           break;
         case SDLK_LEFT:
-          coord.x -= 100;
+          coord.x -= (int)(100.0 / scale);
           break;
         case SDLK_RIGHT:
-          coord.x += 100;
+          coord.x += (int)(100.0 / scale);
           break;
         default:
           break;
@@ -68,10 +68,10 @@ public:
 
       else if (event.type == SDL_MOUSEWHEEL) {
         if (event.wheel.y > 0) {
-          scale += 0.1f;
+          scale += 0.01;
         } else if (event.wheel.y < 0) {
-          if (scale > 0.1f)
-            scale -= 0.1f;
+          if (scale > 0.01)
+            scale -= 0.01;
         }
       }
     }
