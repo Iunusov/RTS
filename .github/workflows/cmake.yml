@@ -37,11 +37,6 @@ jobs:
     - name: make
       run: ./make.cmd
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: RTS
-        path: build_dir/*
-      
   build_windows:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
