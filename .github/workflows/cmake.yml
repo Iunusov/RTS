@@ -26,7 +26,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: RTS
+        name: ubuntu
         path: build_dir/*
 
   build_macos:
@@ -57,5 +57,5 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: RTS
+        name: Windows
         path: build_dir/Release/*
