@@ -13,7 +13,7 @@
 
 namespace {
 const std::array<std::string, 5> bestRenderers = {
-    "direct3d11", "vulkan", "direct3d", "opengl", "opengles2"};
+    "opengl", "direct3d11", "vulkan", "direct3d", "opengles2"};
 std::map<std::string, int> renderPresense;
 
 constexpr int zoomCameraPosition(double pos, int resolution, double camPos,
@@ -47,7 +47,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("VideoContextSDL::setup()");
   SDL_Log("--------------------------------");
   SDL_Log("\n");
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) != 0) {
     SDL_Log("SDL_Init failed");
     return;
   }
@@ -61,9 +61,11 @@ void VideoContextSDL::setup() noexcept {
   SDL_GetCurrentDisplayMode(0, &DM);
   auto Width = DM.w;
   auto Height = DM.h;
+  m_fps = DM.refresh_rate ? DM.refresh_rate : m_fps;
 
   SDL_Log("Display Mode:");
   SDL_Log("%d, %d", Width, Height);
+  SDL_Log("%d fps", m_fps);
   SDL_Log("\n");
 
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -72,15 +74,18 @@ void VideoContextSDL::setup() noexcept {
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   SDL_GL_SetSwapInterval(1);
   SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+  SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
   win =
       SDL_CreateWindow("RTS", 0, 0, DM.w, DM.h,
                        SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL |
                            SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED |
-                           SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI);
+                           SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI |
+                           SDL_WINDOW_MOUSE_CAPTURE);
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
     SDL_Quit();
@@ -129,9 +134,15 @@ void VideoContextSDL::setup() noexcept {
 
 void VideoContextSDL::draw(const Map &) noexcept {
   static auto tex = IMG_LoadTexture(rend, "assets/grass.jpg");
-  bool first_time{true};
+  if (!tex) {
+    return;
+  }
+  static bool first_time{true};
   static SDL_Rect dest;
-   if(first_time){SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); first_time=false;}
+  if (first_time) {
+    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+    first_time = false;
+  }
 
   for (int i(0); i < MAX_COORD; i += dest.w) {
     for (int j(0); j < MAX_COORD; j += dest.h) {
@@ -149,9 +160,15 @@ void VideoContextSDL::draw(const Map &) noexcept {
 
 void VideoContextSDL::draw(const IStaticObject *obj) noexcept {
   static auto tex = IMG_LoadTexture(rend, "assets/base.png");
-  bool first_time{true};
+  if (!tex) {
+    return;
+  }
+  static bool first_time{true};
   static SDL_Rect dest;
-  if(first_time){SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); first_time=false;}
+  if (first_time) {
+    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+    first_time = false;
+  }
   dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
                               m_scale);
 
@@ -163,9 +180,22 @@ void VideoContextSDL::draw(const IStaticObject *obj) noexcept {
 
 void VideoContextSDL::draw(const IMovableObject *obj) noexcept {
   static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
-  bool first_time{true};
+  if (!panz) {
+    return;
+  }
+  static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
+  if (!gun) {
+    return;
+  }
+  static bool first_time{true};
+
   static SDL_Rect dest;
-  if(first_time){SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h); first_time=false;}
+
+  if (first_time) {
+    SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
+    SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
+    first_time = false;
+  }
   dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
                               m_scale);
   dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
@@ -175,8 +205,6 @@ void VideoContextSDL::draw(const IMovableObject *obj) noexcept {
                    dynamic_cast<const IMovableObject *>(obj)->getHeading(),
                    nullptr, SDL_FLIP_NONE);
 
-  static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
-   if(first_time){SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);; first_time=false;}
   dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
                               m_scale);
   dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,

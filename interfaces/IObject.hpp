@@ -25,4 +25,5 @@ public:
   virtual void draw(IVideoContext &) noexcept = 0;
   virtual IObject *clone() const noexcept = 0;
   virtual bool collide(const IMovableObject &) const noexcept = 0;
+  virtual bool isMovable() const noexcept = 0;
 };

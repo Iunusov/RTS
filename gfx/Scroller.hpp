@@ -62,6 +62,8 @@ public:
         case SDLK_RIGHT:
           coord.x += (int)(50.0f / getScale());
           break;
+        case SDLK_ESCAPE:
+          exit(0);
         default:
           break;
         }

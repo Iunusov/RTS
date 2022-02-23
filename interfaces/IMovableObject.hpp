@@ -43,4 +43,5 @@ public:
   virtual void rotateRiht() noexcept final;
 
   void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
+  bool isMovable() CNOF { return true; }
 };

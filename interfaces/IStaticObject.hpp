@@ -29,4 +29,6 @@ public:
   virtual double getHeight() const noexcept = 0;
 
   void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
+
+  bool isMovable() CNOF { return false; }
 };

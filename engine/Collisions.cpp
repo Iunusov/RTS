@@ -6,6 +6,8 @@
 #include "Config.hpp"
 #include "Coord.hpp"
 
+#include <unordered_set>
+
 namespace {
 constexpr size_t BUCKET_COLS{(MAX_COORD / ONE_BUCKET_RESOLUTION) + 1};
 static_assert(BUCKET_COLS * ONE_BUCKET_RESOLUTION >= MAX_COORD, "");
@@ -70,25 +72,35 @@ bool Collisions::checkCollisions(const IMovableObject &obj) const noexcept {
     return true;
   }
 
+  static std::unordered_set<const IObject *> noCollisions;
+  noCollisions.clear();
+
   const auto bkt{getBucketNum(obj.getPosition())};
 #define checkRow(idx, obj)                                                     \
-  (bool{(collision(int64_t(idx - 1), obj) || collision(int64_t(idx), obj) ||   \
-         collision(int64_t(idx + 1), obj))})
+  (bool{(collision(int64_t(idx - 1), obj, noCollisions) ||                     \
+         collision(int64_t(idx), obj, noCollisions) ||                         \
+         collision(int64_t(idx + 1), obj, noCollisions))})
 
   return checkRow(bkt - BUCKET_COLS, obj) || checkRow(bkt, obj) ||
          checkRow(bkt + BUCKET_COLS, obj);
 }
 
-bool Collisions::collision(const int64_t num,
-                           const IMovableObject &obj) const noexcept {
+bool Collisions::collision(
+    const int64_t num, const IMovableObject &obj,
+    std::unordered_set<const IObject *> &noCollisions) const noexcept {
   if (num < 0 || (size_t)num >= NUM_BUCKETS) {
     return false;
   }
 
   const auto &bkt = buckets[num];
   for (const auto &l : bkt) {
+    if (noCollisions.count(l)) {
+      continue;
+    }
     if (l->collide(obj)) {
       return true;
+    } else if (!l->isMovable()) {
+      noCollisions.emplace(l);
     }
   }
 

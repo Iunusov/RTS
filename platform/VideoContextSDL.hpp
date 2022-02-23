@@ -18,6 +18,7 @@ private:
   SDL_Window *win = nullptr;
   int w{};
   int h{};
+  int m_fps = 100;
 
 public:
   static void Create() noexcept;
@@ -34,6 +35,7 @@ public:
 
   int getWidth() const noexcept override { return w; }
   int getHeigt() const noexcept override { return h; }
+  int getFps() const noexcept override { return m_fps; }
 
   void draw(const Map &obj) noexcept override;
   bool isVisible(const Coord &obj) const noexcept override {

@@ -27,7 +27,8 @@ int main(int, char **) {
                              VideoContextSDL::GetInstance()->getHeigt()};
     scroller.execute();
 
-    const size_t expectedMS{(size_t)(1000.0 / 60.0)};
+    const size_t expectedMS{
+        (size_t)(1000.0 / VideoContextSDL::GetInstance()->getFps())};
     const auto start{std::chrono::steady_clock::now()};
 
     double timeDiff{};

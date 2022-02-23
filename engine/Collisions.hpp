@@ -10,6 +10,7 @@ class IMovableObject;
 
 #include "Config.hpp"
 #include <tuple>
+#include <unordered_set>
 
 struct Coord;
 class IStaticObject;
@@ -28,6 +29,7 @@ public:
   bool checkCollisions(const IMovableObject &obj) const noexcept;
 
 private:
-  INLINE bool collision(const int64_t num,
-                        const IMovableObject &obj) const noexcept;
+  INLINE bool
+  collision(const int64_t num, const IMovableObject &obj,
+            std::unordered_set<const IObject *> &not_collide) const noexcept;
 };
