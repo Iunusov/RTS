@@ -17,7 +17,7 @@ extern const ICommand *cmd;
 void addTestData(std::list<IObject *> &Objects) {
   std::cout << "creating test map, please wait..." << std::endl;
 
-  for (int i(0); i < 10000; ++i) {
+  for (int i(0); i < 50000; ++i) {
     TestStaticObject *staticobject = new TestStaticObject{};
     staticobject->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
@@ -34,7 +34,7 @@ void addTestData(std::list<IObject *> &Objects) {
     Objects.emplace_back(staticobject);
   }
 
-  for (size_t i(0); i < 50000; i++) {
+  for (size_t i(0); i < 100000; i++) {
     IObject *obj = new TestObject();
     obj->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
@@ -65,6 +65,7 @@ void addTestData(std::list<IObject *> &Objects) {
 
     Collisions::getInstance()->update(*(IMovableObject *)obj);
     Objects.emplace_back(obj);
+    if (obj->getId()%2)
     obj->acceptCommand(*CommandMove::cmd);
   }
 

@@ -70,7 +70,7 @@ else()
             -Wextra
             -Wpedantic
             -pedantic
-            -Werror
+            #-Werror
             -Wfatal-errors
             -Wshadow
             -Wunused

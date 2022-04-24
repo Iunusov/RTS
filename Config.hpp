@@ -1,7 +1,6 @@
 #pragma once
 #include <stddef.h>
-constexpr const auto MAX_COORD{200000};
-constexpr const auto MAX_COUNT{100000};
+constexpr const auto MAX_COORD{500000};
 constexpr size_t ONE_BUCKET_RESOLUTION{200};
 constexpr const auto MODEL_EXECUTE_PER_SECOND{10};
 
