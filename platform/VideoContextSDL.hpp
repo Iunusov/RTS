@@ -29,7 +29,7 @@ public:
   void setCamera(const Coord &pos) noexcept override { cameraPosition = pos; }
 
   void setScale(float scale) noexcept override {
-    SDL_RenderSetScale(rend, scale, scale);
+    SDL_SetRenderScale(rend, scale, scale);
     m_scale = scale;
   }
 

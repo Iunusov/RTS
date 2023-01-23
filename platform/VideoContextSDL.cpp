@@ -7,20 +7,39 @@
 
 #include <array>
 #include <map>
+#include <string>
 
 #include "IMovableObject.hpp"
 #include "IStaticObject.hpp"
 
 namespace {
-const std::array<std::string, 5> bestRenderers = {
-    "opengl", "direct3d11", "vulkan", "direct3d", "opengles2"};
-std::map<std::string, int> renderPresense;
 
-constexpr int zoomCameraPosition(double pos, int resolution, double camPos,
-                                 int screen_resolution, double scale) {
-  return static_cast<int>(pos - resolution / 2 - camPos +
-                          (int)(screen_resolution / 2.0) / scale);
+constexpr float zoomCameraPosition(double pos, double resolution, double camPos,
+                                 double screen_resolution, double scale) {
+  return static_cast<float>(pos - resolution / 2 - camPos + (screen_resolution / 2.0) / scale);
 }
+
+
+INLINE void drawTexture( SDL_Renderer *rend, const std::string& path, double x, double y, double heading, double camX, double camY, int w, int h, float scale) {
+	static std::map<std::string, SDL_Texture *> textures;
+	if(textures.count(path) == 0){
+		textures[path] = IMG_LoadTexture(rend, path.c_str());
+	}
+
+  SDL_FRect dest;
+	  int iw,ih;
+    SDL_QueryTexture(textures[path], NULL, NULL, &iw, &ih);
+		dest.w = (float)iw;
+	dest.h = (float)ih;
+  dest.x = zoomCameraPosition(x, dest.w, camX, w,
+                              scale);
+
+  dest.y = zoomCameraPosition(y, dest.h, camY, h,
+                              scale);
+
+  SDL_RenderTextureRotated(rend, textures[path], NULL, &dest, heading, nullptr, SDL_FLIP_NONE);
+}
+
 } // namespace
 
 IVideoContext *VideoContextSDL::instance = nullptr;
@@ -61,7 +80,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_GetCurrentDisplayMode(0, &DM);
   auto Width = DM.w;
   auto Height = DM.h;
-  m_fps = DM.refresh_rate ? DM.refresh_rate : m_fps;
+  m_fps = (int)(DM.refresh_rate ? DM.refresh_rate : m_fps);
 
   SDL_Log("Display Mode:");
   SDL_Log("%d, %d", Width, Height);
@@ -81,37 +100,16 @@ void VideoContextSDL::setup() noexcept {
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
   win =
-      SDL_CreateWindow("RTS", 0, 0, DM.w, DM.h,
-                       SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL |
-                           SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED |
-                           SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_ALLOW_HIGHDPI |
-                           SDL_WINDOW_MOUSE_CAPTURE);
+      SDL_CreateWindow("RTS", 0, 0, DM.w, DM.h, SDL_WINDOW_OPENGL);
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
     SDL_Quit();
     return;
   }
 
-  int render_idx{-1};
-
-  for (int i = 0; i < SDL_GetNumRenderDrivers(); ++i) {
-    SDL_RendererInfo rendererInfo = {};
-    SDL_GetRenderDriverInfo(i, &rendererInfo);
-    renderPresense[rendererInfo.name] = i;
-  }
-
-  for (const auto &rname : bestRenderers) {
-    const auto r = renderPresense.find(rname);
-    if (r != renderPresense.end()) {
-      render_idx = r->second;
-      break;
-    }
-  }
-
   rend =
-      SDL_CreateRenderer(win, render_idx,
-                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
-                             SDL_RENDERER_TARGETTEXTURE);
+      SDL_CreateRenderer(win, 0,
+                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   if (rend == nullptr) {
     SDL_Log("SDL_CreateRenderer failed");
@@ -138,80 +136,36 @@ void VideoContextSDL::draw(const Map &) noexcept {
     return;
   }
   static bool first_time{true};
-  static SDL_Rect dest;
+  static SDL_FRect dest;
   if (first_time) {
-    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
+	 int iw,ih;
+    SDL_QueryTexture(tex, NULL, NULL, &iw, &ih);
+	dest.w = (float)iw;
+	dest.h = (float)ih;
     first_time = false;
   }
 
-  for (int i(0); i < MAX_COORD; i += dest.w) {
-    for (int j(0); j < MAX_COORD; j += dest.h) {
+  for (int i(0); i < MAX_COORD; i += (int)dest.w) {
+    for (int j(0); j < MAX_COORD; j += (int)dest.h) {
       if (!isVisible(Coord{(double)i, (double)j})) {
         continue;
       }
       dest.x =
-          (int)(i - (int)cameraPosition.x + (int)(w / 2.0) / double{m_scale});
+          (float)(i - cameraPosition.x + (float)(w / 2.0) / double{m_scale});
       dest.y =
-          (int)(j - (int)cameraPosition.y + (int)(h / 2.0) / double{m_scale});
-      SDL_RenderCopy(rend, tex, NULL, &dest);
+          (float)(j - cameraPosition.y + (float)(h / 2.0) / double{m_scale});
+      SDL_RenderTexture(rend, tex, NULL, &dest);
     }
   }
 }
 
 void VideoContextSDL::draw(const IStaticObject *obj) noexcept {
-  static auto tex = IMG_LoadTexture(rend, "assets/base.png");
-  if (!tex) {
-    return;
-  }
-  static bool first_time{true};
-  static SDL_Rect dest;
-  if (first_time) {
-    SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-    first_time = false;
-  }
-  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
-                              m_scale);
-
-  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
-                              m_scale);
-
-  SDL_RenderCopyEx(rend, tex, NULL, &dest, 0, nullptr, SDL_FLIP_NONE);
+	drawTexture(rend, "assets/base.png", obj->getPosition().x, obj->getPosition().y, 0, cameraPosition.x, cameraPosition.y, w, h, m_scale);
 }
 
 void VideoContextSDL::draw(const IMovableObject *obj) noexcept {
-  static auto panz = IMG_LoadTexture(rend, "assets/panz.png");
-  if (!panz) {
-    return;
-  }
-  static auto gun = IMG_LoadTexture(rend, "assets/gun.png");
-  if (!gun) {
-    return;
-  }
-  static bool first_time{true};
+	drawTexture(rend, "assets/panz.png", obj->getPosition().x, obj->getPosition().y, (obj)->getHeading(), cameraPosition.x, cameraPosition.y, w, h, m_scale);
+	drawTexture(rend, "assets/gun.png", obj->getPosition().x, obj->getPosition().y, (obj)->getHeading(), cameraPosition.x, cameraPosition.y, w, h, m_scale);
 
-  static SDL_Rect dest;
 
-  if (first_time) {
-    SDL_QueryTexture(panz, NULL, NULL, &dest.w, &dest.h);
-    SDL_QueryTexture(gun, NULL, NULL, &dest.w, &dest.h);
-    first_time = false;
-  }
-  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
-                              m_scale);
-  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
-                              m_scale);
-
-  SDL_RenderCopyEx(rend, panz, NULL, &dest,
-                   dynamic_cast<const IMovableObject *>(obj)->getHeading(),
-                   nullptr, SDL_FLIP_NONE);
-
-  dest.x = zoomCameraPosition(obj->getPosition().x, dest.w, cameraPosition.x, w,
-                              m_scale);
-  dest.y = zoomCameraPosition(obj->getPosition().y, dest.h, cameraPosition.y, h,
-                              m_scale);
-  // SDL_RenderCopy(rend, gun, NULL, &dest);
-
-  SDL_RenderCopyEx(rend, gun, NULL, &dest,
-                   dynamic_cast<const IMovableObject *>(obj)->getHeading(),
-                   nullptr, SDL_FLIP_NONE);
 }

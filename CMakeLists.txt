@@ -59,7 +59,7 @@ add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2-static SDL2_image
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image
                                               Threads::Threads)
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX /MD)
