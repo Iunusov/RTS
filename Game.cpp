@@ -38,9 +38,10 @@ int main(int, char **) {
                      timeDiff);
 
     const auto end{std::chrono::steady_clock::now()};
-    const auto elapsedMS{(size_t)(
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count())};
+    const auto elapsedMS{
+        (size_t)(std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                       start)
+                     .count())};
 
     if (expectedMS > elapsedMS) {
       renderer->Delay((size_t)(expectedMS - elapsedMS));

@@ -41,14 +41,14 @@ public:
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) {
+      if (event.type == SDL_EVENT_QUIT) {
         SDL_Quit();
         exit(1);
       }
 
       // const std::lock_guard<std::mutex> lock(mtx);
 
-      if (event.type == SDL_KEYDOWN) {
+      if (event.type == SDL_EVENT_KEY_DOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
           coord.y -= (int)(50.0f / getScale());
@@ -69,7 +69,7 @@ public:
         }
       }
 
-      else if (event.type == SDL_MOUSEWHEEL) {
+      else if (event.type == SDL_EVENT_MOUSE_WHEEL) {
         if (event.wheel.y > 0) {
           scale += 0.01;
         } else if (event.wheel.y < 0) {

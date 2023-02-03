@@ -65,8 +65,8 @@ void addTestData(std::list<IObject *> &Objects) {
 
     Collisions::getInstance()->update(*(IMovableObject *)obj);
     Objects.emplace_back(obj);
-    if (obj->getId()%2)
-    obj->acceptCommand(*CommandMove::cmd);
+    if (obj->getId() % 2)
+      obj->acceptCommand(*CommandMove::cmd);
   }
 
   std::cout << std::endl
