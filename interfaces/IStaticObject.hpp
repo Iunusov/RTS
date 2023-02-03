@@ -15,7 +15,8 @@ public:
   void execute() NCNOF {}
 
   virtual bool collide(const IMovableObject &obj) CNOF {
-    for (const auto &p : getPoints()) {
+    const auto & points{getPoints()};
+    for (const auto &p : points) {
       if ((p + getPosition() - Coord{getWidth() / 2.0, getHeight() / 2.0})
               .distance(obj.getPosition()) < obj.getRadius()) {
         return true;

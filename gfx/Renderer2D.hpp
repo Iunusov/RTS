@@ -7,6 +7,7 @@
 
 //#include <iostream>
 #include <vector>
+#include <chrono>
 
 class Renderer2D final : public IRenderer {
 private:
@@ -22,5 +23,5 @@ public:
   }
 
   void Render(const Coord &pos, float, const std::vector<IObject *> &Objects,
-              const double timeDiff) noexcept override;
+              const std::chrono::time_point<std::chrono::steady_clock> ts) noexcept override;
 };

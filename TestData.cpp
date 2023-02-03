@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <iostream>
 #include <random>
+#include <vector>
 
 static std::mt19937 rng((unsigned int)time(NULL));
 static std::uniform_int_distribution<int64_t> gen(0, MAX_COORD);
@@ -14,10 +15,10 @@ namespace CommandMove {
 extern const ICommand *cmd;
 }
 
-void addTestData(std::list<IObject *> &Objects) {
+void addTestData(std::vector<IObject *> &Objects) {
   std::cout << "creating test map, please wait..." << std::endl;
 
-  for (int i(0); i < 50000; ++i) {
+  for (int i(0); i < MAX_COORD / 5; ++i) {
     TestStaticObject *staticobject = new TestStaticObject{};
     staticobject->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
@@ -34,7 +35,7 @@ void addTestData(std::list<IObject *> &Objects) {
     Objects.emplace_back(staticobject);
   }
 
-  for (size_t i(0); i < 100000; i++) {
+  for (size_t i(0); i < MAX_COORD * 10; i++) {
     IObject *obj = new TestObject();
     obj->setPosition(
         Coord{(decltype(Coord::x))gen(rng), (decltype(Coord::y))gen(rng)});
@@ -50,7 +51,7 @@ void addTestData(std::list<IObject *> &Objects) {
 
         Collisions::getInstance()->checkCollisions(*((IMovableObject *)obj))) {
       static size_t c{};
-      if (++c > 10000) {
+      if (++c > 100000) {
         std::cout << std::endl
                   << "created " << Objects.size() << " units" << std::endl
                   << std::endl;

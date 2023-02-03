@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <chrono>
-#include <list>
+#include <vector>
 #include <thread>
 
 #include "Config.hpp"
@@ -17,7 +17,7 @@ namespace {
 std::atomic_bool doGameLoop{false};
 }
 
-void GameLoop::Start(std::list<IObject *> &gameObjects, RenderData &frame,
+void GameLoop::Start(std::vector<IObject *> &gameObjects, RenderData &frame,
                      IRenderer &renderer) {
   doGameLoop = true;
   static auto th = std::thread([&gameObjects, &frame, &renderer]() {

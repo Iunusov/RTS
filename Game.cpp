@@ -8,11 +8,11 @@
 #include "Scroller.hpp"
 #include "VideoContextSDL.hpp"
 
-extern void addTestData(std::list<IObject *> &Objects);
+extern void addTestData(std::vector<IObject *> &Objects);
 
 #undef main
 int main(int, char **) {
-  static std::list<IObject *> Objects;
+  static std::vector<IObject *> Objects;
   addTestData(Objects);
 
   VideoContextSDL::Create();
@@ -31,11 +31,12 @@ int main(int, char **) {
         (size_t)(1000.0 / VideoContextSDL::GetInstance()->getFps())};
     const auto start{std::chrono::steady_clock::now()};
 
-    double timeDiff{};
+    static std::chrono::time_point<std::chrono::steady_clock> timestamp{};
     static std::vector<IObject *> lastRender;
-    renderFrame.GetRenderData(lastRender, timeDiff);
+    renderFrame.GetRenderData(lastRender, timestamp);
+
     renderer->Render(scroller.GetPos(), scroller.getScale(), lastRender,
-                     timeDiff);
+                     timestamp);
 
     const auto end{std::chrono::steady_clock::now()};
     const auto elapsedMS{

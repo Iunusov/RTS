@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <list>
+#include <vector>
 
 #include "Collisions.hpp"
 #include "IObject.hpp"
@@ -13,6 +13,6 @@ private:
 public:
   GameLoop() = default;
 
-  void Start(std::list<IObject *> &, RenderData &, IRenderer &);
+  void Start(std::vector<IObject *> &, RenderData &, IRenderer &);
   void Stop();
 };

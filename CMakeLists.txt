@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.8)
 project("RTS" CXX)
 
 # set standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # add global compile options
 if(MSVC)
-  add_compile_options(/DNDEBUG)
+#add_compile_options()
 else()
   add_compile_options(-O2 -fomit-frame-pointer -fno-exceptions -pipe)
 endif()

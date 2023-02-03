@@ -21,7 +21,9 @@ size_t getGlobalId() noexcept {
 } // namespace
 
 class ObjectBase : public IObject {
-private:
+  friend class Render2D;
+
+protected:
   const size_t id{getGlobalId()};
 
   int64_t health = 100;
@@ -33,7 +35,6 @@ private:
   double previousHeading{};
   CommandQueue cmds;
 
-public:
   void approx(double timeDiff) noexcept override {
     setPosition(Coord{Math::lerp(previousPosition.x, position.x, timeDiff),
                       Math::lerp(previousPosition.y, position.y, timeDiff)});
@@ -41,6 +42,7 @@ public:
     setHeading(Math::lerp(previousHeading, heading, timeDiff));
   }
 
+public:
   void teleportTo(const Coord &pos) NCNOF {
     previousPosition = pos;
     position = pos;
