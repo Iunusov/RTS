@@ -99,7 +99,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  win = SDL_CreateWindow("RTS", 0, 0, DM->pixel_w, DM->pixel_h,
+  win = SDL_CreateWindow("RTS", DM->pixel_w, DM->pixel_h,
                          SDL_WINDOW_OPENGL);
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
