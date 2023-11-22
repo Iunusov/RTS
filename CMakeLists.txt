@@ -37,6 +37,9 @@ set(BUILD_SHARED_LIBS
     OFF
     CACHE BOOL "" FORCE)
 
+#FIXME:
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL_Image/include/SDL3_image)
+
 add_subdirectory(deps/SDL/SDL)
 add_subdirectory(deps/SDL/SDL_Image)
 
@@ -59,7 +62,7 @@ add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image-static
                                               Threads::Threads)
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX /MD)

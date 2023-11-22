@@ -78,8 +78,8 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("\n");
 
   const SDL_DisplayMode *DM{SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())};
-  auto Width = DM->pixel_w;
-  auto Height = DM->pixel_h;
+  auto Width = DM->w;
+  auto Height = DM->h;
   m_fps = (int)(DM->refresh_rate ? DM->refresh_rate : m_fps);
 
   SDL_Log("Display Mode:");
@@ -99,7 +99,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  win = SDL_CreateWindow("RTS", DM->pixel_w, DM->pixel_h,
+  win = SDL_CreateWindow("RTS", DM->w, DM->h,
                          SDL_WINDOW_OPENGL);
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
