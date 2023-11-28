@@ -26,4 +26,11 @@ constexpr T move(const D len, const double heading) noexcept {
            (decltype(T::x))len * sin(heading * rad)};
 }
 
+template <class T>
+constexpr T CalculateScreenPosition(const T obj_pos,
+                                    const T camPos, const T screen_resolution,
+                                    const T scale) {
+  return (obj_pos - camPos + (screen_resolution / scale) / 2);
+}
+
 } // namespace Math

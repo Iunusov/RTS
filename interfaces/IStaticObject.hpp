@@ -15,7 +15,7 @@ public:
   void execute() NCNOF {}
 
   virtual bool collide(const IMovableObject &obj) CNOF {
-    const auto & points{getPoints()};
+    const auto &points{getPoints()};
     for (const auto &p : points) {
       if ((p + getPosition() - Coord{getWidth() / 2.0, getHeight() / 2.0})
               .distance(obj.getPosition()) < obj.getRadius()) {
@@ -29,7 +29,9 @@ public:
   virtual double getWidth() const noexcept = 0;
   virtual double getHeight() const noexcept = 0;
 
-  void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
+  void draw(IVideoContext &ctx, double timeDiff) NCNOF {
+    ctx.draw(this, timeDiff);
+  }
 
   bool isMovable() CNOF { return false; }
 };

@@ -12,7 +12,7 @@ void RenderData::GetRenderData(
   if (!dataReady.load(std::memory_order_acquire)) {
     return;
   }
-  assert (buffer.size() > 0);
+  assert(buffer.size() > 0);
   for (size_t i(0); i < data.size(); ++i) {
     delete (data[i]);
   }
@@ -35,7 +35,7 @@ void RenderData::PushRenderingData(const std::vector<IObject *> &data,
   if (dataReady.load(std::memory_order_acquire)) {
     return;
   }
-  assert (buffer.size() == 0);
+  assert(buffer.size() == 0);
   for (const auto &obj : data) {
     if (!renderer.isVisible(*obj)) {
       continue;

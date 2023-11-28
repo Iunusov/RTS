@@ -1,6 +1,5 @@
 #pragma once
 
-class Map {};
 
 class IObject;
 class IMovableObject;
@@ -10,9 +9,8 @@ struct Coord;
 class IVideoContext {
 public:
   virtual void setup() noexcept = 0;
-  virtual void draw(const Map &obj) noexcept = 0;
-  virtual void draw(const IMovableObject *obj) noexcept = 0;
-  virtual void draw(const IStaticObject *obj) noexcept = 0;
+  virtual void draw(const IMovableObject *obj, double timeDiff) noexcept = 0;
+  virtual void draw(const IStaticObject *obj, double timeDiff) noexcept = 0;
   virtual bool isVisible(const Coord &) const noexcept = 0;
   virtual void present() noexcept = 0;
   virtual void clear() noexcept = 0;

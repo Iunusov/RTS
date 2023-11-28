@@ -36,22 +36,20 @@ public:
   int getWidth() const noexcept override { return w; }
   int getHeigt() const noexcept override { return h; }
   int getFps() const noexcept override { return m_fps; }
-
-  void draw(const Map &obj) noexcept override;
   bool isVisible(const Coord &obj) const noexcept override {
 
     const auto posx = obj.x;
     const auto posy = obj.y;
 
-    return (posx >= cameraPosition.x - w / 2.0 / (double)m_scale - 1000) &&
-           (posx <= cameraPosition.x + w / 2.0 / (double)m_scale + 1000) &&
-           (posy >= cameraPosition.y - h / 2.0 / (double)m_scale - 1000) &&
-           (posy <= cameraPosition.y + h / 2.0 / (double)m_scale + 1000);
+    return (posx >= cameraPosition.x - w / 2.0 / (double)m_scale - 5000) &&
+           (posx <= cameraPosition.x + w / 2.0 / (double)m_scale + 5000) &&
+           (posy >= cameraPosition.y - h / 2.0 / (double)m_scale - 5000) &&
+           (posy <= cameraPosition.y + h / 2.0 / (double)m_scale + 5000);
   }
   inline void clear() noexcept override;
   void delay(size_t ms) const noexcept override;
   void present() noexcept override;
-  void draw(const IMovableObject *obj) noexcept override;
-  void draw(const IStaticObject *obj) noexcept override;
+  void draw(const IMovableObject *obj, double timeDiff) noexcept override;
+  void draw(const IStaticObject *obj, double timeDiff) noexcept override;
   void setup() noexcept override;
 };

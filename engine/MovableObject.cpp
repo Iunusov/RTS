@@ -5,11 +5,6 @@
 
 #include "Math.hpp"
 
-void IMovableObject::approx(double timeDiff) noexcept {
-  fire_angle = (double)Math::lerp(prev_fire_angle, fire_angle, timeDiff);
-  ObjectBase::approx(timeDiff);
-}
-
 void IMovableObject::execute() noexcept {
   Collisions::getInstance()->update(*this);
   prev_fire_angle = fire_angle;

@@ -31,7 +31,6 @@ private:
   double prev_fire_angle{fire_angle};
 
 public:
-  void approx(double timeDiff) NCNOF;
   void execute() NCNOF;
   virtual bool collide(const IMovableObject &obj) CNOF;
 
@@ -42,6 +41,8 @@ public:
   virtual void rotateLeft() noexcept final;
   virtual void rotateRiht() noexcept final;
 
-  void draw(IVideoContext &ctx) NCNOF { ctx.draw(this); }
+  void draw(IVideoContext &ctx, double timeDiff) NCNOF {
+    ctx.draw(this, timeDiff);
+  }
   bool isMovable() CNOF { return true; }
 };

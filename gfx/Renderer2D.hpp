@@ -12,7 +12,6 @@
 class Renderer2D final : public IRenderer {
 private:
   IVideoContext *ctx = nullptr;
-  Map map;
 
 public:
   Renderer2D(IVideoContext *ctx_) noexcept : ctx{ctx_} {}
@@ -23,5 +22,5 @@ public:
   }
 
   void Render(const Coord &pos, float, const std::vector<IObject *> &Objects,
-              const std::chrono::time_point<std::chrono::steady_clock> ts) noexcept override;
+              const std::chrono::time_point<std::chrono::steady_clock> &ts) noexcept override;
 };

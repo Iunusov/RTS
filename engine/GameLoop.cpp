@@ -2,8 +2,8 @@
 
 #include <atomic>
 #include <chrono>
-#include <vector>
 #include <thread>
+#include <vector>
 
 #include "Config.hpp"
 #include "Coord.hpp"

@@ -7,13 +7,38 @@
 #include "Renderer2D.hpp"
 #include "Scroller.hpp"
 #include "VideoContextSDL.hpp"
+#include "TestObject.hpp"
+#include "TestStaticObject.hpp"
 
-extern void addTestData(std::vector<IObject *> &Objects);
+namespace CommandMove {
+extern const ICommand *cmd;
+}
 
 #undef main
 int main(int, char **) {
   static std::vector<IObject *> Objects;
-  addTestData(Objects);
+  
+  for(size_t i(0); i<MAX_COORD; i+=5000){
+  TestStaticObject *obj = new TestStaticObject{};
+  obj->setPosition(Coord{(double)i,(double)i});
+  obj->teleportTo(obj->getPosition());
+  Collisions::getInstance()->update_static(*obj);
+  Objects.push_back(obj);
+  }
+
+  for(size_t i(0); i<MAX_COORD; i+=1500){
+  for(size_t j(0); j<MAX_COORD; j+=1500){
+    IObject *obj = new TestObject();
+    obj->setPosition(Coord{(double)i, (double)j});
+	obj->teleportTo(obj->getPosition());
+    obj->acceptCommand(*CommandMove::cmd);
+
+    Collisions::getInstance()->update(*(IMovableObject *)obj);
+    Objects.push_back(obj);
+  }
+  }
+  
+  std::cout<<Objects.size()<<" objects created"<<std::endl;
 
   VideoContextSDL::Create();
   VideoContextSDL::GetInstance()->setup();

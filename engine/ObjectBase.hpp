@@ -31,18 +31,11 @@ protected:
   Coord position{};
   double heading{};
 
-  Coord previousPosition{};
-  double previousHeading{};
   CommandQueue cmds;
 
-  void approx(double timeDiff) noexcept override {
-    setPosition(Coord{Math::lerp(previousPosition.x, position.x, timeDiff),
-                      Math::lerp(previousPosition.y, position.y, timeDiff)});
-
-    setHeading(Math::lerp(previousHeading, heading, timeDiff));
-  }
-
 public:
+  Coord previousPosition{};
+  double previousHeading{};
   void teleportTo(const Coord &pos) NCNOF {
     previousPosition = pos;
     position = pos;

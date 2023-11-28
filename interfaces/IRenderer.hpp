@@ -11,5 +11,5 @@ public:
   virtual bool isVisible(const IObject &obj) const noexcept = 0;
   virtual void
   Render(const Coord &pos, float scale, const std::vector<IObject *> &Objects,
-         const std::chrono::time_point<std::chrono::steady_clock> ts) = 0;
+         const std::chrono::time_point<std::chrono::steady_clock> &ts) = 0;
 };
