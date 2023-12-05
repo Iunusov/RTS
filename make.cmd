@@ -1,13 +1,10 @@
 git submodule update --init --force --remote  --recursive
 
-mkdir build_dir
-cd build_dir
+mkdir build_debug
+mkdir build_release
 
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-cmake --build .  --config Debug
+cmake -DCMAKE_BUILD_TYPE=Debug   -S . -B build_debug
+cmake -DCMAKE_BUILD_TYPE=Release -S . -B build_release
 
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build .  --config Release
-
-cd ..
-
+cmake --build build_debug   --config Debug
+cmake --build build_release --config Release
