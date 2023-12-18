@@ -12,4 +12,5 @@ public:
   virtual void
   Render(const Coord &pos, float scale, const std::vector<IObject *> &Objects,
          const std::chrono::time_point<std::chrono::steady_clock> &ts) = 0;
+  virtual ~IRenderer() noexcept = default;
 };

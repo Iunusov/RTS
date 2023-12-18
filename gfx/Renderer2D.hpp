@@ -6,8 +6,8 @@
 #include "IVideoContext.hpp"
 
 //#include <iostream>
-#include <vector>
 #include <chrono>
+#include <vector>
 
 class Renderer2D final : public IRenderer {
 private:
@@ -18,9 +18,10 @@ public:
   void Delay(size_t ms) noexcept override { ctx->delay(ms); }
 
   bool isVisible(const IObject &obj) const noexcept override {
-    return ctx->isVisible(obj.getPosition());
+    return ctx->isVisible(obj.getPositionRef());
   }
 
   void Render(const Coord &pos, float, const std::vector<IObject *> &Objects,
-              const std::chrono::time_point<std::chrono::steady_clock> &ts) noexcept override;
+              const std::chrono::time_point<std::chrono::steady_clock>
+                  &ts) noexcept override;
 };

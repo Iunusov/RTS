@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Cloneable.hpp"
 #include "IObject.hpp"
-#include "IStaticObject.hpp"
+#include "StaticObject.hpp"
 
 class TestStaticObject final
-    : public Cloneable<TestStaticObject, IObject, IStaticObject> {
+    : public Cloneable<TestStaticObject, IObject, StaticObject> {
 private:
   const std::vector<Coord> points{
       {453, 50},   {424, 100}, {395, 150}, {367, 200}, {338, 250},

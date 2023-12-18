@@ -4,7 +4,7 @@
 
 #include "CommandBase.hpp"
 #include "Config.hpp"
-#include "IMovableObject.hpp"
+#include "MovableObject.hpp"
 #include "ObjectBase.hpp"
 
 namespace IdleCommands {
@@ -17,7 +17,7 @@ public:
     static std::uniform_int_distribution<int64_t> gen(0, 359);
     double diff = (double)360.0 / (double)MODEL_EXECUTE_PER_SECOND;
 
-    IMovableObject &obj = dynamic_cast<IMovableObject &>(o);
+    MovableObject &obj = dynamic_cast<MovableObject &>(o);
     if (f) {
       obj.fire_angle += diff / 4.0;
     } else {
@@ -47,9 +47,9 @@ public:
     static std::mt19937 rng((unsigned int)time(NULL));
     static std::uniform_int_distribution<int64_t> gen(0, 10);
 
-    IMovableObject &obj = dynamic_cast<IMovableObject &>(o);
+    MovableObject &obj = dynamic_cast<MovableObject &>(o);
 
-    prev = obj.getPosition();
+    prev = obj.getPositionRef();
 
     if (gen(rng) % 3 == 0) {
       obj.rotateRiht();
@@ -63,7 +63,7 @@ public:
       obj.moveBackward();
     }
 
-    if (obj.getPosition() == prev) {
+    if (obj.getPositionRef() == prev) {
       f = !f;
       return false;
     }

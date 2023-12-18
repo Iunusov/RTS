@@ -5,13 +5,20 @@ project("RTS" CXX)
 # set standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # add global compile options
 if(MSVC)
-#add_compile_options()
+  add_compile_options(/MT)
+  add_compile_options(/MP)
+  add_compile_options(/nologo)
+
+  #add_compile_options("$<$<CONFIG:Release>:/fp:strict>")
+  add_compile_options("$<$<CONFIG:Release>:/O2>")
 else()
-  add_compile_options(-O2 -fomit-frame-pointer -fno-exceptions -pipe)
+  add_compile_options("$<$<CONFIG:Release>:-O2>")
+  add_compile_options("$<$<CONFIG:Release>:-fomit-frame-pointer>")
+  add_compile_options("$<$<CONFIG:Release>:-fno-exceptions>")
+  add_compile_options("$<$<CONFIG:Release>:-pipe>")
 endif()
 
 # set pthreads
@@ -65,7 +72,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image-static
                                               Threads::Threads)
 if(MSVC)
-  target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX /MD)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 else()
   target_compile_options(
     ${PROJECT_NAME}
@@ -73,7 +80,7 @@ else()
             -Wextra
             -Wpedantic
             -pedantic
-            #-Werror
+            -Werror
             -Wfatal-errors
             -Wshadow
             -Wunused

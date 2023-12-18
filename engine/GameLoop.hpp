@@ -3,10 +3,9 @@
 
 #include <vector>
 
-#include "Collisions.hpp"
 #include "IObject.hpp"
-#include "IRenderer.hpp"
-#include "RenderData.hpp"
+class IRenderer;
+class RenderData;
 
 class GameLoop final {
 private:

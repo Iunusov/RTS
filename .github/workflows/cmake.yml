@@ -27,7 +27,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: ubuntu
-        path: build_dir/*
+        path: build_release/*
 
   build_macos:
     # The CMake configure and build commands are platform agnostic and should work equally
@@ -58,4 +58,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: Windows
-        path: build_dir/Release/*
+        path: build_release/Release/*

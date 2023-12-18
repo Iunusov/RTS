@@ -1,13 +1,11 @@
 #pragma once
 
 #include <SDL.h>
-#include <mutex>
 
 #include "Coord.hpp"
-#include "IObject.hpp"
 #include "IVideoContext.hpp"
-class IMovableObject;
-class IStaticObject;
+class MovableObject;
+class StaticObject;
 
 class VideoContextSDL final : public IVideoContext {
 private:
@@ -49,7 +47,7 @@ public:
   inline void clear() noexcept override;
   void delay(size_t ms) const noexcept override;
   void present() noexcept override;
-  void draw(const IMovableObject *obj, double timeDiff) noexcept override;
-  void draw(const IStaticObject *obj, double timeDiff) noexcept override;
+  void draw(const MovableObject *obj, double timeDiff) noexcept override;
+  void draw(const StaticObject *obj, double timeDiff) noexcept override;
   void setup() noexcept override;
 };

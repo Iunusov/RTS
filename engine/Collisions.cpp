@@ -1,18 +1,20 @@
 #include "Collisions.hpp"
 
-#include "IMovableObject.hpp"
-#include "IStaticObject.hpp"
+#include "MovableObject.hpp"
+#include "StaticObject.hpp"
 
 #include "Config.hpp"
 #include "Coord.hpp"
 
+#include <cassert>
+#include <cmath>
+
 namespace {
 
-inline size_t getBucketNum(const Coord &tgt) noexcept {
-  const int64_t result =
-      (((int64_t)(tgt.x)) / ONE_BUCKET_RESOLUTION) +
-      (((int64_t)(tgt.y)) / ONE_BUCKET_RESOLUTION) * BUCKET_COLS;
-  return result >= 0 ? (size_t)result : NUM_BUCKETS;
+inline int64_t getBucketNum(const Coord &tgt) noexcept {
+  return ((int64_t)tgt.x / (int64_t)ONE_BUCKET_RESOLUTION) +
+         ((int64_t)tgt.y / (int64_t)ONE_BUCKET_RESOLUTION) *
+             (int64_t)BUCKET_COLS;
 }
 } // namespace
 
@@ -21,58 +23,59 @@ Collisions *Collisions::getInstance() noexcept {
   return &instance;
 }
 
-void Collisions::update(const IMovableObject &obj) noexcept {
-  const auto newBktId{getBucketNum(obj.getPosition())};
-  const auto id{obj.getId()};
+void Collisions::update(MovableObject &obj) noexcept {
+  const int64_t newBktId{getBucketNum(obj.getPositionRef())};
+  if (newBktId < 0) {
+    return;
+  }
+  const auto bkt_id{obj.getCollisionsBucketID()};
 
-  const auto bktId = m_bkt_id.find(id);
-
-  if (bktId != m_bkt_id.end()) {
-    if (bktId->second == newBktId) {
+  if (bkt_id) {
+    if (*bkt_id == (size_t)newBktId) {
       return;
     } else {
-      m_bkt[bktId->second].erase(&obj);
+      m_bkt[*bkt_id].erase(&obj);
     }
   }
   m_bkt[newBktId].emplace(&obj);
-  m_bkt_id[id] = newBktId;
+  obj.setCollisionsBucketID((size_t)newBktId);
 }
 
-void Collisions::update_static(const IStaticObject &obj) noexcept {
+void Collisions::update_static(const StaticObject &obj) noexcept {
 
   for (const auto &p : obj.getPoints()) {
-    const auto pos = obj.getPosition() + p -
+    const auto pos = obj.getPositionRef() + p -
                      Coord{obj.getWidth() / 2.0, obj.getHeight() / 2.0};
-    const auto bkt = getBucketNum(pos);
-    if (bkt >= NUM_BUCKETS) {
+    const int64_t bkt = getBucketNum(pos);
+    if (bkt < 0 || (size_t)bkt >= NUM_BUCKETS) {
       continue;
     }
     m_bkt[bkt].emplace(&obj);
   }
 }
 
-bool Collisions::checkCollisions(const IMovableObject &obj) const noexcept {
-  if (obj.getPosition().x < 0 || obj.getPosition().x >= MAX_COORD ||
-      obj.getPosition().y < 0 || obj.getPosition().y >= MAX_COORD ||
-      getBucketNum(obj.getPosition()) >= NUM_BUCKETS) {
+bool Collisions::checkCollisions(const MovableObject &obj) const noexcept {
+  const auto &pos = obj.getPositionRef();
+  if (pos.x < 0 || pos.x >= MAX_COORD || pos.y < 0 || pos.y >= MAX_COORD ||
+      (size_t)getBucketNum(pos) >= NUM_BUCKETS) {
     return true;
   }
 
   static std::unordered_set<const IObject *> noCollisions;
   noCollisions.clear();
 
-  const auto bkt{getBucketNum(obj.getPosition())};
+  const int64_t bkt{getBucketNum(obj.getPositionRef())};
 #define checkRow(idx, obj)                                                     \
-  (bool{(collision(int64_t(idx - 1), obj, noCollisions) ||                     \
-         collision(int64_t(idx), obj, noCollisions) ||                         \
-         collision(int64_t(idx + 1), obj, noCollisions))})
+  (bool{(collision(idx, obj, noCollisions) ||                                  \
+         collision(idx - 1, obj, noCollisions) ||                              \
+         collision(idx + 1, obj, noCollisions))})
 
-  return checkRow(bkt - BUCKET_COLS, obj) || checkRow(bkt, obj) ||
-         checkRow(bkt + BUCKET_COLS, obj);
+  return checkRow(bkt, obj) || checkRow(bkt - (int64_t)BUCKET_COLS, obj) ||
+         checkRow(bkt + (int64_t)BUCKET_COLS, obj);
 }
 
 bool Collisions::collision(
-    const int64_t num, const IMovableObject &obj,
+    const int64_t num, const MovableObject &obj,
     std::unordered_set<const IObject *> &noCollisions) const noexcept {
   if (num < 0 || (size_t)num >= NUM_BUCKETS) {
     return false;

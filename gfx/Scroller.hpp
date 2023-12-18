@@ -15,12 +15,10 @@ class Scroller final {
 private:
   double scale{0.8};
   mutable std::mutex mtx;
-  const int w{};
-  const int h{};
   Coord coord{MAX_COORD / 2.0, MAX_COORD / 2.0};
 
 public:
-  Scroller(int w_, int h_) : w{w_}, h{h_} {}
+  Scroller() {}
   Coord GetPos() const noexcept {
     // const std::lock_guard<std::mutex> lock(mtx);
     return coord;

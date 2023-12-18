@@ -9,18 +9,20 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 
-#include "IMovableObject.hpp"
-#include "IStaticObject.hpp"
 #include "Math.hpp"
+#include "MovableObject.hpp"
+#include "StaticObject.hpp"
+#include <cmath>
 
 namespace {
 
-void drawTexture(SDL_Renderer *rend, const std::string &path,
-                        const double x, const double y, const double heading,
-                        const double camX, const double camY, const int w,
-                        const int h, const double scale, const double timeDiff,
-                        const IObject *obj) {
+void drawTexture(SDL_Renderer *rend, const std::string &path, const double x,
+                 const double y, const double heading, const double camX,
+                 const double camY, const int w, const int h,
+                 const double scale, const double timeDiff,
+                 const IObject *obj) {
 
   static std::unordered_map<std::string, std::tuple<SDL_Texture *, SDL_FRect *>>
       textures;
@@ -32,29 +34,28 @@ void drawTexture(SDL_Renderer *rend, const std::string &path,
     SDL_QueryTexture(texture, NULL, NULL, &iw, &ih);
     dest->w = (float)iw;
     dest->h = (float)ih;
-    std::get<0>(textures[path]) = texture;
-    std::get<1>(textures[path]) = dest;
+    const auto new_texture = std::tuple{texture, dest};
+    textures[path] = new_texture;
+
+    std::cout << "texture cached: " << path << std::endl;
   }
 
   const auto *base = dynamic_cast<const ObjectBase *>(obj);
   const auto approx_position =
-      Coord{Math::lerp(base->previousPosition.x, x, timeDiff),
-            Math::lerp(base->previousPosition.y, y, timeDiff)};
+      Coord{std::lerp(base->previousPosition.x, x, timeDiff),
+            std::lerp(base->previousPosition.y, y, timeDiff)};
   auto stored = textures[path];
   auto txt = std::get<0>(stored);
   auto dest = std::get<1>(stored);
-  
+
   dest->x = (float)Math::CalculateScreenPosition(
-      approx_position.x - (double)dest->w / 2.0, camX, (double)w,
-      scale);
+      approx_position.x - (double)dest->w / 2.0, camX, (double)w, scale);
 
   dest->y = (float)Math::CalculateScreenPosition(
-      approx_position.y - (double)dest->h / 2.0, camY, (double)h,
-      scale);
+      approx_position.y - (double)dest->h / 2.0, camY, (double)h, scale);
 
-  SDL_RenderTextureRotated(rend, txt, NULL,
-                           dest,
-                           Math::lerp(base->previousHeading, heading, timeDiff),
+  SDL_RenderTextureRotated(rend, txt, NULL, dest,
+                           std::lerp(base->previousHeading, heading, timeDiff),
                            nullptr, SDL_FLIP_NONE);
 }
 
@@ -94,7 +95,6 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("%s", driver.c_str());
   SDL_Log("\n");
 
-
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -107,9 +107,10 @@ void VideoContextSDL::setup() noexcept {
   SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
-  win =  SDL_CreateWindow("RTS", 0,0,  SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL );
-  if(!win) {
-	  win = SDL_CreateWindow("RTS", 0,0, SDL_WINDOW_FULLSCREEN );
+  win =
+      SDL_CreateWindow("RTS", 0, 0, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+  if (!win) {
+    win = SDL_CreateWindow("RTS", 0, 0, SDL_WINDOW_FULLSCREEN);
   }
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
@@ -138,18 +139,18 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("%dx%d", w, h);
 }
 
-void VideoContextSDL::draw(const IStaticObject *obj, double timeDiff) noexcept {
-  drawTexture(rend, "assets/base.png", obj->getPosition().x,
-              obj->getPosition().y, 0, cameraPosition.x, cameraPosition.y, w, h,
-              m_scale, timeDiff, obj);
+void VideoContextSDL::draw(const StaticObject *obj, double timeDiff) noexcept {
+  drawTexture(rend, "assets/base.png", obj->getPositionRef().x,
+              obj->getPositionRef().y, 0, cameraPosition.x, cameraPosition.y, w,
+              h, (double)m_scale, timeDiff, obj);
 }
 
-void VideoContextSDL::draw(const IMovableObject *obj,
-                           double timeDiff) noexcept {
-  drawTexture(rend, "assets/panz.png", obj->getPosition().x,
-              obj->getPosition().y, (obj)->getHeading(), cameraPosition.x,
-              cameraPosition.y, w, h, m_scale, timeDiff, obj);
-  drawTexture(rend, "assets/gun.png", obj->getPosition().x,
-              obj->getPosition().y, (obj)->getHeading(), cameraPosition.x,
-              cameraPosition.y, w, h, m_scale, timeDiff, obj);
+void VideoContextSDL::draw(const MovableObject *obj, double timeDiff) noexcept {
+  const auto &pos{obj->getPositionRef()};
+  drawTexture(rend, "assets/panz.png", pos.x, pos.y, (obj)->getHeading(),
+              cameraPosition.x, cameraPosition.y, w, h, (double)m_scale,
+              timeDiff, obj);
+  drawTexture(rend, "assets/gun.png", pos.x, pos.y, (obj)->getHeading(),
+              cameraPosition.x, cameraPosition.y, w, h, (double)m_scale,
+              timeDiff, obj);
 }

@@ -1,17 +1,14 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "Cloneable.hpp"
 #include "Coord.hpp"
 #include "CppHacks.hpp"
 #include "ICommand.hpp"
 #include "IObject.hpp"
-#include "Math.hpp"
 
 #include "CommandQueue.hpp"
 
 #include <iostream>
+#include <optional>
 
 namespace {
 size_t getGlobalId() noexcept {
@@ -22,6 +19,9 @@ size_t getGlobalId() noexcept {
 
 class ObjectBase : public IObject {
   friend class Render2D;
+
+private:
+  std::optional<size_t> coll_bkt_id_{};
 
 protected:
   const size_t id{getGlobalId()};
@@ -42,12 +42,15 @@ public:
   }
 
   size_t getId() CNOF { return id; }
-  virtual int64_t getHealth() CNOF { return health; }
-  Coord getPosition() CNOF { return position; }
+  int64_t getHealth() CNOF { return health; }
+  const Coord &getPositionRef() CNOF { return position; }
   void setPosition(const Coord &pos) NCNOF { position = pos; }
   double getHeading() CNOF { return heading; }
   void setHeading(double angle) NCNOF { heading = angle; };
 
   void execute() noexcept override;
   void acceptCommand(const ICommand &command) NCNOF;
+
+  std::optional<size_t> getCollisionsBucketID() CNOF { return coll_bkt_id_; }
+  void setCollisionsBucketID(size_t b_id) NCNOF { coll_bkt_id_ = b_id; }
 };

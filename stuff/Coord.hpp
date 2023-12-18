@@ -1,7 +1,7 @@
 #pragma once
-#include <tuple>
 
 #include "Math.hpp"
+#include <tuple>
 
 struct Coord final {
   using T = double;
@@ -20,7 +20,7 @@ struct Coord final {
 
   constexpr Coord &operator=(const Coord &) noexcept = default;
 
-  constexpr decltype(auto) distance(const Coord &other) const noexcept {
+  constexpr decltype(auto) distanceSquare(const Coord &other) const noexcept {
     return Math::dist(*this, other);
   }
 
