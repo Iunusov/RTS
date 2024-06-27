@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project("RTS" CXX)
 
 # set standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # add global compile options
@@ -43,13 +43,50 @@ set(SUPPORT_PNG
 set(BUILD_SHARED_LIBS
     OFF
     CACHE BOOL "" FORCE)
+set(SDLIMAGE_AVIF
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_XV
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_XPM
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_XCF
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_WEBP
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_PNM
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_PCX
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_LBM
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_JXL
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_QOI
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDLIMAGE_TGA
+    OFF
+    CACHE BOOL "" FORCE)
+	
+	       
+
 
 #FIXME:
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL_Image/include/SDL3_image)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL/include/SDL3)
 
 add_subdirectory(deps/SDL/SDL)
 add_subdirectory(deps/SDL/SDL_Image)
-
+		
 # add executable
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/stuff)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/interfaces)

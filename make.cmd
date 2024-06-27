@@ -8,3 +8,4 @@ cmake -DCMAKE_BUILD_TYPE=Release -S . -B build_release
 
 cmake --build build_debug   --config Debug
 cmake --build build_release --config Release
+
