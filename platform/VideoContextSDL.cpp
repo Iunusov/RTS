@@ -29,11 +29,8 @@ void drawTexture(SDL_Renderer *rend, const std::string &path, const double x,
 
   if (textures.count(path) == 0) {
     auto *dest = new SDL_FRect{};
-    int iw, ih;
     auto *texture = IMG_LoadTexture(rend, path.c_str());
-    SDL_QueryTexture(texture, NULL, NULL, &iw, &ih);
-    dest->w = (float)iw;
-    dest->h = (float)ih;
+    SDL_GetTextureSize(texture, &dest->w, &dest->h);
     const auto new_texture = std::tuple{texture, dest};
     textures[path] = new_texture;
 
@@ -85,7 +82,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("VideoContextSDL::setup()");
   SDL_Log("--------------------------------");
   SDL_Log("\n");
-  if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
     SDL_Log("SDL_Init failed");
     return;
   }
@@ -104,8 +101,8 @@ void VideoContextSDL::setup() noexcept {
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   SDL_GL_SetSwapInterval(1);
   SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-  SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+  // SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
+  // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
   win =
       SDL_CreateWindow("RTS", 0, 0, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
@@ -118,8 +115,7 @@ void VideoContextSDL::setup() noexcept {
     return;
   }
 
-  rend = SDL_CreateRenderer(
-      win, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  rend = SDL_CreateRenderer(win, 0);
 
   if (rend == nullptr) {
     SDL_Log("SDL_CreateRenderer failed");
@@ -127,10 +123,8 @@ void VideoContextSDL::setup() noexcept {
     return;
   }
 
-  SDL_RendererInfo info{};
-  SDL_GetRendererInfo(rend, &info);
   SDL_Log("Renderer:");
-  SDL_Log("%s", info.name);
+  SDL_Log("%s", SDL_GetRendererName(rend));
   SDL_Log("\n");
   SDL_Log("Done.");
   SDL_Log("--------------------------------");

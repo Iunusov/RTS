@@ -47,7 +47,7 @@ public:
       // const std::lock_guard<std::mutex> lock(mtx);
 
       if (event.type == SDL_EVENT_KEY_DOWN) {
-        switch (event.key.keysym.sym) {
+        switch (event.key.key) {
         case SDLK_UP:
           coord.y -= (int)(50.0f / getScale());
           break;
