@@ -45,11 +45,11 @@ void drawTexture(SDL_Renderer *rend, const std::string &path, const double x,
   auto txt = std::get<0>(stored);
   auto dest = std::get<1>(stored);
 
-  dest->x = (float)Math::CalculateScreenPosition(
-      approx_position.x - (double)dest->w / 2.0, camX, (double)w, scale);
+  dest->x = (float)Math::CalculateScreenPosition(approx_position.x, dest->w,
+                                                 camX, w, scale);
 
-  dest->y = (float)Math::CalculateScreenPosition(
-      approx_position.y - (double)dest->h / 2.0, camY, (double)h, scale);
+  dest->y = (float)Math::CalculateScreenPosition(approx_position.y, dest->h,
+                                                 camY, h, scale);
 
   SDL_RenderTextureRotated(rend, txt, NULL, dest,
                            std::lerp(base->previousHeading, heading, timeDiff),
@@ -82,7 +82,7 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("VideoContextSDL::setup()");
   SDL_Log("--------------------------------");
   SDL_Log("\n");
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
     SDL_Log("SDL_Init failed");
     return;
   }

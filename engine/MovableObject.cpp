@@ -33,11 +33,10 @@ bool MovableObject::collide(const MovableObject &obj) const noexcept {
     return false;
   }
   const auto radius = getRadius() + obj.getRadius();
-  return getPositionRef().distanceSquare(obj.getPositionRef()) <
-         radius * radius;
+  return Math::dist(getPositionRef(), obj.getPositionRef()) < radius * radius;
 }
 
-int64_t MovableObject::getDiff() const noexcept {
+double MovableObject::getDiff() const noexcept {
   static_assert(400 % MODEL_EXECUTE_PER_SECOND == 0,
                 "only integer diff allowed");
   return 400 / MODEL_EXECUTE_PER_SECOND;
@@ -45,8 +44,10 @@ int64_t MovableObject::getDiff() const noexcept {
 
 void MovableObject::move(const bool forward) noexcept {
   const auto currentPosition{getPositionRef()};
-  setPosition(currentPosition +
-              Math::move<Coord>((forward ? 1 : -1) * getDiff(), getHeading()));
+  Coord newPosition{currentPosition};
+  newPosition +=
+      Math::move<Coord>((forward ? 1 : -1) * getDiff(), getHeading());
+  setPosition(newPosition);
   if (Collisions::getInstance()->checkCollisions(*this)) {
     setPosition(currentPosition);
   }

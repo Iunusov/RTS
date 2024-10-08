@@ -24,6 +24,6 @@ public:
   virtual void rotateRiht() noexcept final;
   virtual void move(const bool forward = true) noexcept final;
   virtual double fireAngle() const noexcept final;
-  virtual int64_t getDiff() const noexcept final;
+  virtual double getDiff() const noexcept final;
   virtual double getRadius() const noexcept { return 0; }
 };
