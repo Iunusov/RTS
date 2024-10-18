@@ -60,7 +60,9 @@ void drawTexture(SDL_Renderer *rend, const std::string &path, const double x,
 
 IVideoContext *VideoContextSDL::instance = nullptr;
 
-void VideoContextSDL::Create() noexcept { instance = new VideoContextSDL(); }
+void VideoContextSDL::Create(Window data) noexcept {
+  instance = new VideoContextSDL(data);
+}
 
 VideoContextSDL::~VideoContextSDL() noexcept {
   SDL_DestroyRenderer(rend);
@@ -104,16 +106,25 @@ void VideoContextSDL::setup() noexcept {
   // SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
-  win =
-      SDL_CreateWindow("RTS", 0, 0, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
-  if (!win) {
-    win = SDL_CreateWindow("RTS", 0, 0, SDL_WINDOW_FULLSCREEN);
-  }
+  SDL_PropertiesID props = SDL_CreateProperties();
+
+#ifdef _WIN32
+  SDL_SetPointerProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_HWND_POINTER,
+                         mainWindow);
+#else
+  SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X11_WINDOW_NUMBER,
+                        mainWindow);
+#endif
+  SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,
+                         true);
+
+  win = SDL_CreateWindowWithProperties(props);
   if (win == nullptr) {
     SDL_Log("SDL_CreateWindow failed");
     SDL_Quit();
     return;
   }
+  SDL_ShowWindow(win);
 
   rend = SDL_CreateRenderer(win, 0);
 

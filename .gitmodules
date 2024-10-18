@@ -6,3 +6,6 @@
 	path = deps/SDL/SDL_Image
 	url = https://github.com/libsdl-org/SDL_image
 	branch = main
+[submodule "deps/fltk"]
+	path = deps/fltk
+	url = https://github.com/fltk/fltk

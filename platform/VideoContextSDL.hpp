@@ -2,6 +2,10 @@
 
 #include <SDL.h>
 
+#include <FL/Fl.H>
+#include <FL/Fl_Window.H>
+#include <FL/x.H>
+
 #include "Coord.hpp"
 #include "IVideoContext.hpp"
 class MovableObject;
@@ -17,10 +21,12 @@ private:
   int w{};
   int h{};
   int m_fps = 100;
+  Window mainWindow{};
 
 public:
-  static void Create() noexcept;
+  static void Create(Window) noexcept;
   static IVideoContext *GetInstance() noexcept { return instance; }
+  VideoContextSDL(Window data) { mainWindow = data; }
 
   ~VideoContextSDL() noexcept override;
 
