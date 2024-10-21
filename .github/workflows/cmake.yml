@@ -38,3 +38,13 @@ jobs:
 
     - name: make
       run: ./make.cmd
+
+  build_macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: configure
+      run:  brew install mesa
+    - name: make
+      run: ./make.cmd

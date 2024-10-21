@@ -15,6 +15,16 @@
 #include "MovableObject.hpp"
 #include "StaticObject.hpp"
 #include <cmath>
+#include <fstream>
+
+#ifdef _WIN32
+extern "C" {
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+}
+extern "C" {
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
 
 namespace {
 
@@ -73,50 +83,115 @@ VideoContextSDL::~VideoContextSDL() noexcept {
 void VideoContextSDL::clear() noexcept { SDL_RenderClear(rend); }
 
 void VideoContextSDL::delay(size_t ms) const noexcept {
-  // calculates to 60 fps
+  int vsync{0};
+  SDL_GetRenderVSync(rend, &vsync);
+  if (vsync) {
+    return;
+  }
   SDL_Delay((uint32_t)ms);
 }
 
 void VideoContextSDL::present() noexcept { SDL_RenderPresent(rend); }
 
 void VideoContextSDL::setup() noexcept {
-  SDL_Log("--------------------------------");
+  std::string renderer_name;
+  std::string vsync_option;
+  std::string fps_option;
+  std::string antialiasing_option;
+
+  auto renderer_name_file = std::ifstream("renderer.txt");
+
+  std::getline(renderer_name_file, renderer_name);
+  std::getline(renderer_name_file, vsync_option);
+  std::getline(renderer_name_file, fps_option);
+  std::getline(renderer_name_file, antialiasing_option);
+
+  if (renderer_name.size() && renderer_name[0] == '#') {
+    renderer_name = "";
+  }
+
+  SDL_Log(0);
+  SDL_Log("-------------------------------------------------");
   SDL_Log("VideoContextSDL::setup()");
-  SDL_Log("--------------------------------");
-  SDL_Log("\n");
+  SDL_Log("-------------------------------------------------");
+  SDL_Log("%s", SDL_GetRevision());
+  SDL_Log(0);
+  SDL_Log("Available Drivers:");
+  const auto numdrivers{SDL_GetNumRenderDrivers()};
+  std::string drivers;
+
+  for (auto i(0); i < numdrivers; ++i) {
+    drivers += SDL_GetRenderDriver(i);
+    drivers += " ";
+  }
+
+  SDL_Log("%s", drivers.c_str());
+
+  if (renderer_name.size()) {
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, renderer_name.c_str());
+  }
+
+  if (vsync_option == "1") {
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+  }
+
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
     SDL_Log("SDL_Init failed");
     return;
   }
-
+  SDL_Log(0);
   SDL_Log("Current Driver:");
   std::string driver{SDL_GetCurrentVideoDriver()};
   SDL_Log("%s", driver.c_str());
-  SDL_Log("\n");
-
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
-  SDL_GL_SetSwapInterval(1);
-  SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-  // SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "1");
-  // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
   SDL_PropertiesID props = SDL_CreateProperties();
-
 #ifdef _WIN32
-  SDL_SetPointerProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_HWND_POINTER,
-                         mainWindow);
-#else
-  SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X11_WINDOW_NUMBER,
-                        mainWindow);
+  if (std::string(SDL_GetCurrentVideoDriver()) == "windows") {
+    SDL_SetPointerProperty(props, SDL_PROP_WINDOW_CREATE_WIN32_HWND_POINTER,
+                           mainWindow);
+  }
+#endif
+
+#ifdef __linux__
+  if (std::string(SDL_GetCurrentVideoDriver()) == "x11") {
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X11_WINDOW_NUMBER,
+                          mainWindow);
+  }
+#endif
+#ifdef __APPLE__
+  if (std::string(SDL_GetCurrentVideoDriver()) == "cocoa") {
+    SDL_SetPointerProperty(props, SDL_PROP_WINDOW_CREATE_COCOA_WINDOW_POINTER,
+                           mainWindow);
+  }
 #endif
   SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,
                          true);
+
+  if (renderer_name.find("opengl") != std::string::npos) {
+    SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+  }
+
+  if (renderer_name == "metal") {
+    SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_METAL_BOOLEAN, true);
+  }
+
+  SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
+  SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN,
+                         true);
+  SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN, true);
+  SDL_Log(0);
+  if ((renderer_name.find("opengl") != std::string::npos) &&
+      antialiasing_option == "1") {
+    SDL_Log("SDL_GL_MULTISAMPLEBUFFERS=1; SDL_GL_MULTISAMPLESAMPLES=4");
+    SDL_Log(0);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  }
 
   win = SDL_CreateWindowWithProperties(props);
   if (win == nullptr) {
@@ -124,24 +199,50 @@ void VideoContextSDL::setup() noexcept {
     SDL_Quit();
     return;
   }
-  SDL_ShowWindow(win);
 
-  rend = SDL_CreateRenderer(win, 0);
+  auto dmode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(win));
+
+  SDL_Log("FPS: %f", dmode->refresh_rate);
+
+  m_fps = (int)dmode->refresh_rate;
+  if (fps_option.size()) {
+    m_fps = std::stoi(fps_option);
+  }
+  rend =
+      SDL_CreateRenderer(win, renderer_name.size() ? renderer_name.c_str() : 0);
 
   if (rend == nullptr) {
     SDL_Log("SDL_CreateRenderer failed");
     SDL_Quit();
     return;
   }
+  if (vsync_option == "1") {
+    SDL_SetRenderVSync(rend, SDL_RENDERER_VSYNC_ADAPTIVE);
+  }
 
+  SDL_Log(0);
   SDL_Log("Renderer:");
   SDL_Log("%s", SDL_GetRendererName(rend));
-  SDL_Log("\n");
-  SDL_Log("Done.");
-  SDL_Log("--------------------------------");
-  SDL_Log("\n");
+  SDL_Log(0);
   SDL_GetCurrentRenderOutputSize(rend, &w, &h);
   SDL_Log("%dx%d", w, h);
+  SDL_Log(0);
+  SDL_Log("VSync: ");
+
+  int vsync{0};
+  SDL_GetRenderVSync(rend, &vsync);
+  if (vsync) {
+    SDL_Log("on");
+  } else {
+    SDL_Log("off");
+  }
+
+  SDL_ShowWindow(win);
+  SDL_Log("-------------------------------------------------");
+  SDL_Log("VideoContextSDL::setup() finished successfully");
+  SDL_Log("-------------------------------------------------");
+  SDL_Log(0);
+  SDL_Log(0);
 }
 
 void VideoContextSDL::draw(const StaticObject *obj, double timeDiff) noexcept {

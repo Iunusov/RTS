@@ -9,9 +9,11 @@ class RenderData;
 
 class GameLoop final {
 private:
+  std::vector<IObject *> Objects;
+
 public:
   GameLoop() = default;
 
-  void Start(std::vector<IObject *> &, RenderData &, IRenderer &);
+  void Start(RenderData &, IRenderer &);
   void Stop();
 };

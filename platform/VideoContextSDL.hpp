@@ -20,7 +20,7 @@ private:
   SDL_Window *win = nullptr;
   int w{};
   int h{};
-  int m_fps = 100;
+  float m_fps = 100.0f;
   Window mainWindow{};
 
 public:
@@ -33,13 +33,15 @@ public:
   void setCamera(const Coord &pos) noexcept override { cameraPosition = pos; }
 
   void setScale(float scale) noexcept override {
-    SDL_SetRenderScale(rend, scale, scale);
     m_scale = scale;
+    SDL_SetRenderScale(rend, m_scale, m_scale);
+    SDL_Rect viewport{0, 0, (int)(w / m_scale), (int)(h / m_scale)};
+    SDL_SetRenderViewport(rend, &viewport);
   }
 
   int getWidth() const noexcept override { return w; }
   int getHeigt() const noexcept override { return h; }
-  int getFps() const noexcept override { return m_fps; }
+  float getFps() const noexcept override { return m_fps; }
   bool isVisible(const Coord &obj) const noexcept override {
 
     const auto posx = obj.x;
@@ -56,4 +58,9 @@ public:
   void draw(const MovableObject *obj, double timeDiff) noexcept override;
   void draw(const StaticObject *obj, double timeDiff) noexcept override;
   void setup() noexcept override;
+  static void getPrimaryDisplayResolution(int &w, int &h) {
+    auto dmode = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay());
+    w = dmode->w;
+    h = dmode->h;
+  }
 };

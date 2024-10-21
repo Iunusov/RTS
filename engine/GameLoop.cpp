@@ -5,45 +5,61 @@
 #include <thread>
 #include <vector>
 
+#include "Collisions.hpp"
 #include "Config.hpp"
 #include "Coord.hpp"
 #include "IObject.hpp"
 #include "IRenderer.hpp"
 #include "RenderData.hpp"
-
-#include <iostream>
+#include "TestObject.hpp"
+#include "TestStaticObject.hpp"
 
 namespace {
 std::atomic_bool doGameLoop{false};
 }
 
-void GameLoop::Start(std::vector<IObject *> &gameObjects, RenderData &frame,
-                     IRenderer &renderer) {
+namespace CommandMove {
+extern const ICommand *cmd;
+}
+
+void GameLoop::Start(RenderData &frame, IRenderer &renderer) {
+  // tmp test data
+  for (size_t i(0); i < MAX_COORD; i += 1500) {
+    TestStaticObject *obj = new TestStaticObject{};
+    obj->setPosition(Coord{(double)i, (double)i});
+    obj->teleportTo(obj->getPositionRef());
+    Collisions::getInstance()->update_static(*obj);
+    Objects.push_back(obj);
+  }
+  for (size_t i(0); i < MAX_COORD; i += 2500) {
+    for (size_t j(0); j < MAX_COORD; j += 2500) {
+      TestObject *obj = new TestObject();
+      obj->setPosition(Coord{(double)i, (double)j});
+      obj->teleportTo(obj->getPositionRef());
+      obj->acceptCommand(*CommandMove::cmd);
+
+      Collisions::getInstance()->update(*obj);
+      Objects.push_back(obj);
+    }
+  }
+  std::cout << Objects.size() << " objects created" << std::endl;
+
+  // game thread
   doGameLoop = true;
-  static auto th = std::thread([&gameObjects, &frame, &renderer]() {
+  static auto th = std::thread([this, &frame, &renderer]() {
     doGameLoop = true;
     while (doGameLoop) {
       const auto start = std::chrono::steady_clock::now();
-      for (auto o : gameObjects) {
+      for (auto o : Objects) {
         o->execute();
       }
-      frame.PushRenderingData(gameObjects, renderer);
+      frame.PushRenderingData(Objects, renderer);
 
       const auto end = std::chrono::steady_clock::now();
       const size_t spent =
           (size_t)std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                         start)
               .count();
-
-      {
-        size_t cpuLoad =
-            (size_t)(100.0 * (double)(spent) / (double(MODEL_CYCLE_TIME_MS)));
-        static size_t counter{};
-        if ((++counter % 20) == 0) {
-          counter = 0;
-          std::cout << "cpuLoad: " << cpuLoad << " %" << std::endl;
-        }
-      }
 
       if (spent < MODEL_CYCLE_TIME_MS) {
         std::this_thread::sleep_for(

@@ -12,8 +12,11 @@ if(MSVC)
   add_compile_options(/MP)
   add_compile_options(/nologo)
 
-  #add_compile_options("$<$<CONFIG:Release>:/fp:strict>")
-  add_compile_options("$<$<CONFIG:Release>:/O2>")
+  # add_compile_options("$<$<CONFIG:Release>:/fp:strict>")
+  add_compile_options("$<$<CONFIG:Release>:/Ox>")
+  add_compile_options("$<$<CONFIG:Release>:/GL>")
+  add_compile_options("$<$<CONFIG:Release>:/Y->")
+  add_link_options("$<$<CONFIG:Release>:/LTCG>")
 else()
   add_compile_options("$<$<CONFIG:Release>:-O2>")
   add_compile_options("$<$<CONFIG:Release>:-fomit-frame-pointer>")
@@ -82,18 +85,28 @@ set(SDL_DISABLE_UNINSTALL
 set(FLTK_BUILD_SHARED_LIBS
     OFF
     CACHE BOOL "" FORCE)
-	
-	       
+set(FLTK_BUILD_FLUID
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLTK_BUILD_FLTK_OPTIONS
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLTK_BUILD_TEST
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLTK_BUILD_EXAMPLES
+    OFF
+    CACHE BOOL "" FORCE)
 
-
-#FIXME:
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL_Image/include/SDL3_image)
+# FIXME:
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL_Image/include/SDL3_image)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/SDL/SDL/include/SDL3)
 
 add_subdirectory(deps/SDL/SDL)
 add_subdirectory(deps/SDL/SDL_Image)
 add_subdirectory(deps/fltk)
-		
+
 # add executable
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/stuff)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/interfaces)
@@ -113,10 +126,10 @@ add_executable(${PROJECT_NAME} ${SUB_SOURCES})
 
 # link and private compile options
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image-static
-                                              Threads::Threads fltk)
-                                              
-                                              
+target_link_libraries(
+  ${PROJECT_NAME} PRIVATE SDL3::SDL3-static SDL3_image-static Threads::Threads
+                          fltk)
+
 add_definitions(-DFLTK_USE_CAIRO=0)
 
 if(MSVC)
@@ -128,7 +141,7 @@ else()
             -Wextra
             -Wpedantic
             -pedantic
-           # -Werror
+            # -Werror
             -Wfatal-errors
             -Wshadow
             -Wunused
@@ -148,4 +161,10 @@ if(MSVC)
   file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 else()
   file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+endif()
+
+if(MSVC)
+  file(COPY renderer.txt DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+else()
+  file(COPY renderer.txt DESTINATION ${CMAKE_BINARY_DIR})
 endif()
