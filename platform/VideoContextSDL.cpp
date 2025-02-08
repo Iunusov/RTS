@@ -99,7 +99,8 @@ void VideoContextSDL::setup() noexcept {
   std::string fps_option;
   std::string antialiasing_option;
 
-  auto renderer_name_file = std::ifstream("renderer.txt");
+  auto renderer_name_file =
+      std::ifstream(std::string(SDL_GetBasePath()) + "renderer.txt");
 
   std::getline(renderer_name_file, renderer_name);
   std::getline(renderer_name_file, vsync_option);
@@ -202,12 +203,8 @@ void VideoContextSDL::setup() noexcept {
 
   auto dmode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(win));
 
-  SDL_Log("FPS: %f", dmode->refresh_rate);
+  m_fps = dmode->refresh_rate;
 
-  m_fps = (int)dmode->refresh_rate;
-  if (fps_option.size()) {
-    m_fps = std::stoi(fps_option);
-  }
   rend =
       SDL_CreateRenderer(win, renderer_name.size() ? renderer_name.c_str() : 0);
 
@@ -228,14 +225,20 @@ void VideoContextSDL::setup() noexcept {
   SDL_Log("%dx%d", w, h);
   SDL_Log(0);
   SDL_Log("VSync: ");
-
   int vsync{0};
   SDL_GetRenderVSync(rend, &vsync);
+
   if (vsync) {
     SDL_Log("on");
   } else {
     SDL_Log("off");
   }
+
+  if (fps_option.size() && !vsync) {
+    m_fps = round(std::stoi(fps_option));
+  }
+
+  SDL_Log("FPS: %f", m_fps);
 
   SDL_ShowWindow(win);
   SDL_Log("-------------------------------------------------");

@@ -1,7 +1,7 @@
 ﻿#include <chrono>
+#include <iostream>
 #include <thread>
 #include <vector>
-#include <iostream>
 
 #include "Config.hpp"
 #include "GameLoop.hpp"
@@ -26,8 +26,8 @@ int main(int, char **) {
   SDL_Init(SDL_INIT_VIDEO);
   VideoContextSDL::getPrimaryDisplayResolution(w, h);
   SDL_Quit();
-  
-  std::cout<<w<<" "<<h<<std::endl;
+
+  std::cout << w << " " << h << std::endl;
 
   // Create main window
   auto window = new Fl_Window(w, h, "RTS");
@@ -47,12 +47,11 @@ int main(int, char **) {
     game.Start(renderFrame, *renderer);
 
     while (true) {
-      static Scroller scroller{};
-      scroller.execute();
-
-      const size_t expectedMS{
-          (size_t)(1000.0 / VideoContextSDL::GetInstance()->getFps())};
+      const float expectedMS{
+          (float)(1000.0 / VideoContextSDL::GetInstance()->getFps())};
       const auto start{std::chrono::steady_clock::now()};
+      static Scroller scroller{expectedMS};
+      scroller.execute();
 
       static std::chrono::time_point<std::chrono::steady_clock> timestamp{};
       static std::vector<IObject *> lastRender;
@@ -62,9 +61,10 @@ int main(int, char **) {
                        timestamp);
 
       const auto end{std::chrono::steady_clock::now()};
-      const auto elapsedMS{(size_t)(
-          std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-              .count())};
+      const auto elapsedMS{
+          (float)(std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                        start)
+                      .count())};
 
       if (expectedMS > elapsedMS) {
         renderer->Delay((size_t)(expectedMS - elapsedMS));
